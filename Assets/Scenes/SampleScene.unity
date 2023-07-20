@@ -123,71 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &359933174
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_Time
-      value: 0.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_MinVertexDistance
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7057433357444007584, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_Name
-      value: Obstacle
-      objectReference: {fileID: 0}
-    - target: {fileID: 8006666677143675394, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_RootOrder
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8006666677143675394, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 8006666677143675394, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 9.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 8006666677143675394, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8006666677143675394, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8006666677143675394, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8006666677143675394, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8006666677143675394, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8006666677143675394, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8006666677143675394, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8006666677143675394, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -494,63 +429,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1225886106
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 6215224671553251570, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_Name
-      value: Obstacle2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6389630664798800976, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_RootOrder
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 6389630664798800976, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.019923031
-      objectReference: {fileID: 0}
-    - target: {fileID: 6389630664798800976, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 6.477667
-      objectReference: {fileID: 0}
-    - target: {fileID: 6389630664798800976, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6389630664798800976, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6389630664798800976, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6389630664798800976, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6389630664798800976, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6389630664798800976, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6389630664798800976, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6389630664798800976, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: ff7fdcca6091be059912cdfcc48189cf, type: 3}
 --- !u!1 &1309746853
 GameObject:
   m_ObjectHideFlags: 0
@@ -828,7 +706,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1622602913
 MonoBehaviour:
@@ -842,6 +720,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57cd2a7f3ce7df4f1b654cdacfa1cc4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currLevel: 2
 --- !u!1 &1731515871
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,21 +7,24 @@ public class DefaultObstacleMovement : MonoBehaviour
 
     public float ms;
 
-    public Vector3 startPos;
-    private Rigidbody2D rb;
-    // Start is called before the first frame update
+
+    private bool isOnScreen = false;
+
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-
-        startPos = transform.position;
-
-        rb.velocity = new Vector2(0, -ms);
+        GetComponent<Rigidbody2D>().velocity = new Vector2(0, -ms);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
 
+    private void Update()
+    {
+        if (!GetComponent<Renderer>().isVisible && isOnScreen)
+        {
+            Destroy(gameObject);
+        }
+        if (GetComponent<Renderer>().isVisible && !isOnScreen)
+        {
+            isOnScreen = true;
+        }
     }
 }

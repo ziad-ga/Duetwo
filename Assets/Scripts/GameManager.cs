@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
 
     static GameObject blue, red;
 
+    [SerializeField]
+    private int currLevel = 1;
+
     private void Awake()
     {
         if (instance != null)
@@ -20,6 +23,10 @@ public class GameManager : MonoBehaviour
 
         blue = GameObject.FindGameObjectWithTag("Blue");
         red = GameObject.FindGameObjectWithTag("Red");
+
+        GameObject levelPrefab = (GameObject)Resources.Load("Prefabs/Levels/Level" + currLevel);
+        Instantiate(levelPrefab, levelPrefab.transform.position, Quaternion.identity);
+
     }
     public static void HandleCollision(string name)
     {
@@ -33,10 +40,10 @@ public class GameManager : MonoBehaviour
 
         otherBall.GetComponent<Movement>().enabled = false;
         ball.GetComponent<Movement>().enabled = false;
-
+        ball.GetComponent<Collider2D>().enabled = false;
+        otherBall.GetComponent<Collider2D>().enabled = false;
         ball.SetActive(false);
 
-        // GameObject.Destroy(ball.gameObject);
 
         GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
 
@@ -57,25 +64,20 @@ public class GameManager : MonoBehaviour
             obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 10);
         }
 
-        instance.StartCoroutine(ResetObjects(obstacles));
+        instance.StartCoroutine(ResetObjects());
         instance.StartCoroutine(ResetBalls());
 
 
     }
 
-    private static IEnumerator ResetObjects(GameObject[] obstacles)
+    private static IEnumerator ResetObjects()
     {
 
         yield return new WaitForSeconds(1);
 
-        foreach (var obstacle in obstacles)
-        {
-            obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, -obstacle.GetComponent<DefaultObstacleMovement>().ms);
-        }
-        foreach (var obstacle in obstacles)
-        {
-            obstacle.transform.position = obstacle.GetComponent<DefaultObstacleMovement>().startPos;
-        }
+        Destroy(GameObject.FindGameObjectWithTag("Level"));
+        GameObject levelPrefab = (GameObject)Resources.Load("Prefabs/Levels/Level" + instance.currLevel);
+        Instantiate(levelPrefab, levelPrefab.transform.position, Quaternion.identity);
 
 
     }
@@ -88,15 +90,13 @@ public class GameManager : MonoBehaviour
         redMovement = red.GetComponent<Movement>();
         blue.SetActive(true);
         red.SetActive(true);
-        blue.GetComponent<Collider2D>().enabled = false;
-        red.GetComponent<Collider2D>().enabled = false;
 
-        // blueMovement.RotationSpeed *= 3;
+
 
         int counter = 1;
         if (blueMovement.currDirection == Direction.COUNTERCLOCKWISE)
         {
-            blueMovement.RotationSpeed = blueMovement.angle + 360;
+            MovementSync.rotationSpeed = blueMovement.angle + 360;
 
             while (true)
             {
@@ -115,15 +115,15 @@ public class GameManager : MonoBehaviour
                     blue.GetComponent<Collider2D>().enabled = true;
                     red.GetComponent<Movement>().enabled = true;
                     red.GetComponent<Collider2D>().enabled = true;
-                    // blueMovement.RotationSpeed /= 3;
-                    blueMovement.RotationSpeed = MovementSync.defaultRotationSpeed;
+                    MovementSync.rotationSpeed = MovementSync.defaultRotationSpeed;
+
                     break;
                 }
             }
         }
         else
         {
-            blueMovement.RotationSpeed = 720 - blueMovement.angle;
+            MovementSync.rotationSpeed = 720 - blueMovement.angle;
 
             while (true)
             {
@@ -142,10 +142,7 @@ public class GameManager : MonoBehaviour
                     blue.GetComponent<Collider2D>().enabled = true;
                     red.GetComponent<Movement>().enabled = true;
                     red.GetComponent<Collider2D>().enabled = true;
-                    // blueMovement.RotationSpeed /= 3;
-                    blueMovement.RotationSpeed = MovementSync.defaultRotationSpeed;
-
-
+                    MovementSync.rotationSpeed = MovementSync.defaultRotationSpeed;
 
                     break;
                 }

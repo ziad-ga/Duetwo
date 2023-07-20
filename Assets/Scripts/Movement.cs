@@ -12,7 +12,7 @@ public class Movement : MonoBehaviour
     public float angle;
 
     [property: SerializeField]
-    public float RotationSpeed { get { return MovementSync.rotationSpeed; } set { MovementSync.rotationSpeed = value; } }
+    public float RotationSpeed { get { return MovementSync.rotationSpeed; } }
 
     [property: SerializeField]
     private float Radius { get { return MovementSync.radius; } }
@@ -49,11 +49,8 @@ public class Movement : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // Input.GetTouch().position
-
         if (SystemInfo.deviceType == DeviceType.Desktop)
         {
             if (Input.GetKey(KeyCode.LeftArrow))
