@@ -10,8 +10,8 @@ public class GameManager : MonoBehaviour
     static GameObject blue, red;
 
     [SerializeField]
-    private int currLevel = 1;
-
+    public static int currLevel = 1;
+    public static GameObject levelObj;
     private void Awake()
     {
         if (instance != null)
@@ -25,9 +25,11 @@ public class GameManager : MonoBehaviour
         red = GameObject.FindGameObjectWithTag("Red");
 
         GameObject levelPrefab = (GameObject)Resources.Load("Prefabs/Levels/Level" + currLevel);
-        Instantiate(levelPrefab, levelPrefab.transform.position, Quaternion.identity);
+        levelObj = Instantiate(levelPrefab, levelPrefab.transform.position, Quaternion.identity);
 
     }
+
+
     public static void HandleCollision(string name)
     {
         GameObject ball = red, otherBall = blue;
@@ -38,12 +40,15 @@ public class GameManager : MonoBehaviour
             otherBall = red;
         }
 
+        // other ball already fired this function
+        if (otherBall.GetComponent<Movement>().enabled == false) { ball.SetActive(false); return; }
+
+
         otherBall.GetComponent<Movement>().enabled = false;
         ball.GetComponent<Movement>().enabled = false;
-        ball.GetComponent<Collider2D>().enabled = false;
-        otherBall.GetComponent<Collider2D>().enabled = false;
-        ball.SetActive(false);
 
+        ball.SetActive(false);
+        instance.GetComponent<LevelGenerator>().enabled = false;
 
         GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
 
@@ -59,6 +64,8 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
 
+        blue.GetComponent<Collider2D>().enabled = false;
+        red.GetComponent<Collider2D>().enabled = false;
         foreach (var obstacle in obstacles)
         {
             obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 10);
@@ -76,8 +83,9 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1);
 
         Destroy(GameObject.FindGameObjectWithTag("Level"));
-        GameObject levelPrefab = (GameObject)Resources.Load("Prefabs/Levels/Level" + instance.currLevel);
-        Instantiate(levelPrefab, levelPrefab.transform.position, Quaternion.identity);
+        GameObject levelPrefab = (GameObject)Resources.Load("Prefabs/Levels/Level" + currLevel);
+        levelObj = Instantiate(levelPrefab, levelPrefab.transform.position, Quaternion.identity);
+        instance.GetComponent<LevelGenerator>().enabled = true;
 
 
     }

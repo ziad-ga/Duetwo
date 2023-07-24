@@ -686,6 +686,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1622602912}
   - component: {fileID: 1622602913}
+  - component: {fileID: 1622602914}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -720,7 +721,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57cd2a7f3ce7df4f1b654cdacfa1cc4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currLevel: 2
+--- !u!114 &1622602914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1622602910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50bdf0ab5a873e44aadc3b73d1ee3310, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1731515871
 GameObject:
   m_ObjectHideFlags: 0
@@ -983,7 +995,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1757108486}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0

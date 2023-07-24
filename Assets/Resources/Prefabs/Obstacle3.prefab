@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8008215663031287219}
   - component: {fileID: 3992376173245238709}
   - component: {fileID: 888987964086191986}
+  - component: {fileID: 1540613603353865803}
   m_Layer: 0
   m_Name: Obstacle3
   m_TagString: Obstacle
@@ -31,7 +32,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.69, y: 16.15, z: 0}
   m_LocalScale: {x: 1.75, y: 0.29, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -247,4 +248,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ms: 2
-  startPos: {x: 0, y: 0, z: 0}
+--- !u!95 &1540613603353865803
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8591251274319255800}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7c5c8b344fe6e261191bd2797774d2f0, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
