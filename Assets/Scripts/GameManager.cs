@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     static GameObject blue, red;
 
     [SerializeField]
-    public static int currLevel = 1;
+    public static int currLevel = 2;
     public static GameObject levelObj;
     private void Awake()
     {

@@ -46,14 +46,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7549855352590207592}
     m_Modifications:
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_Time
-      value: 0.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_MinVertexDistance
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 7057433357444007584, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
       propertyPath: m_Name
       value: Obstacle
@@ -116,14 +108,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7549855352590207592}
     m_Modifications:
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_Time
-      value: 0.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_MinVertexDistance
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 7057433357444007584, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
       propertyPath: m_Name
       value: Obstacle (4)
@@ -186,14 +170,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7549855352590207592}
     m_Modifications:
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_Time
-      value: 0.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_MinVertexDistance
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 7057433357444007584, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
       propertyPath: m_Name
       value: Obstacle (5)
@@ -256,14 +232,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7549855352590207592}
     m_Modifications:
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_Time
-      value: 0.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_MinVertexDistance
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 7057433357444007584, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
       propertyPath: m_Name
       value: Obstacle (7)
@@ -326,14 +294,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7549855352590207592}
     m_Modifications:
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_Time
-      value: 0.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_MinVertexDistance
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 7057433357444007584, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
       propertyPath: m_Name
       value: Obstacle (2)
@@ -396,14 +356,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7549855352590207592}
     m_Modifications:
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_Time
-      value: 0.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_MinVertexDistance
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 7057433357444007584, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
       propertyPath: m_Name
       value: Obstacle (3)
@@ -466,14 +418,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7549855352590207592}
     m_Modifications:
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_Time
-      value: 0.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_MinVertexDistance
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 7057433357444007584, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
       propertyPath: m_Name
       value: Obstacle (1)
@@ -536,14 +480,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7549855352590207592}
     m_Modifications:
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_Time
-      value: 0.24
-      objectReference: {fileID: 0}
-    - target: {fileID: 4146265364552896608, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
-      propertyPath: m_MinVertexDistance
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 7057433357444007584, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
       propertyPath: m_Name
       value: Obstacle (6)

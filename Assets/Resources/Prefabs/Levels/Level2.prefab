@@ -28,21 +28,17 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 9048974763153549703}
+  - {fileID: 4821387384304045331}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1372173815375740337
+--- !u!1001 &3204196845212653861
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 5081974508602605464}
     m_Modifications:
-    - target: {fileID: 2014992569514923342, guid: 701c2674c4c48234ba126929c23a209f, type: 3}
-      propertyPath: angularVelocity
-      value: 250
-      objectReference: {fileID: 0}
     - target: {fileID: 6949886138702606484, guid: 701c2674c4c48234ba126929c23a209f, type: 3}
       propertyPath: m_Name
       value: Obstacle6
@@ -52,20 +48,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7970978033658876982, guid: 701c2674c4c48234ba126929c23a209f, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2.0900004
-      objectReference: {fileID: 0}
-    - target: {fileID: 7970978033658876982, guid: 701c2674c4c48234ba126929c23a209f, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.29000005
-      objectReference: {fileID: 0}
-    - target: {fileID: 7970978033658876982, guid: 701c2674c4c48234ba126929c23a209f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.02
       objectReference: {fileID: 0}
     - target: {fileID: 7970978033658876982, guid: 701c2674c4c48234ba126929c23a209f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.58
+      value: -3.76
       objectReference: {fileID: 0}
     - target: {fileID: 7970978033658876982, guid: 701c2674c4c48234ba126929c23a209f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -99,14 +87,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7970978033658876982, guid: 701c2674c4c48234ba126929c23a209f, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 701c2674c4c48234ba126929c23a209f, type: 3}
---- !u!4 &9048974763153549703 stripped
+--- !u!4 &4821387384304045331 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7970978033658876982, guid: 701c2674c4c48234ba126929c23a209f, type: 3}
-  m_PrefabInstance: {fileID: 1372173815375740337}
+  m_PrefabInstance: {fileID: 3204196845212653861}
   m_PrefabAsset: {fileID: 0}
