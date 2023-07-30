@@ -6,7 +6,7 @@ public class Options : MonoBehaviour
 {
     void Start()
     {
-        Application.targetFrameRate = Screen.currentResolution.refreshRate;
+        Application.targetFrameRate = ((int)Screen.currentResolution.refreshRateRatio.value);
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
     }
 
