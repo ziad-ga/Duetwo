@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -8,7 +6,7 @@ public enum Direction { CLOCKWISE, COUNTERCLOCKWISE }
 public class Movement : MonoBehaviour
 {
 
-    [SerializeField]
+    [HideInInspector]
     public float angle;
 
     [property: SerializeField]
@@ -19,6 +17,7 @@ public class Movement : MonoBehaviour
 
     private float Height { get { return MovementSync.height; } }
 
+    [HideInInspector]
     public Direction currDirection = Direction.CLOCKWISE;
 
     public void RotateClockWise()

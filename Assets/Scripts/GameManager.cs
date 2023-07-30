@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -10,8 +9,8 @@ public class GameManager : MonoBehaviour
     static GameObject blue, red;
 
     [SerializeField]
-    public static int currLevel = 1;
-    public static GameObject levelObj;
+    public static int currChunk = 1;
+    public static GameObject chunkObj;
     private void Awake()
     {
         if (instance != null)
@@ -23,9 +22,6 @@ public class GameManager : MonoBehaviour
 
         blue = GameObject.FindGameObjectWithTag("Blue");
         red = GameObject.FindGameObjectWithTag("Red");
-
-        GameObject levelPrefab = (GameObject)Resources.Load("Prefabs/Levels/Level" + currLevel);
-        levelObj = Instantiate(levelPrefab, levelPrefab.transform.position, Quaternion.identity);
 
     }
 
@@ -48,7 +44,7 @@ public class GameManager : MonoBehaviour
         ball.GetComponent<Movement>().enabled = false;
 
         ball.SetActive(false);
-        instance.GetComponent<LevelGenerator>().enabled = false;
+        instance.GetComponent<ChunkGenerator>().enabled = false;
 
         GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
 
@@ -82,10 +78,10 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(1);
 
-        Destroy(GameObject.FindGameObjectWithTag("Level"));
-        GameObject levelPrefab = (GameObject)Resources.Load("Prefabs/Levels/Level" + currLevel);
-        levelObj = Instantiate(levelPrefab, levelPrefab.transform.position, Quaternion.identity);
-        instance.GetComponent<LevelGenerator>().enabled = true;
+        Destroy(GameObject.FindGameObjectWithTag("Chunk"));
+        GameObject ChunkPrefab = (GameObject)Resources.Load("Prefabs/Chunks/Chunk" + currChunk);
+        chunkObj = Instantiate(ChunkPrefab, ChunkPrefab.transform.position, Quaternion.identity);
+        instance.GetComponent<ChunkGenerator>().enabled = true;
 
 
     }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RotatingObstacle : MonoBehaviour
@@ -12,8 +10,4 @@ public class RotatingObstacle : MonoBehaviour
         GetComponent<Rigidbody2D>().angularVelocity = angularVelocity;
     }
 
-    void Update()
-    {
-
-    }
 }
