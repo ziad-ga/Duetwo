@@ -39,14 +39,19 @@ public class GameManager : MonoBehaviour
             otherBall = red;
         }
 
+        AudioManager.PlayAudio("Collision");
+        ball.GetComponent<Renderer>().enabled = false;
+        ball.GetComponent<Collider2D>().enabled = false;
+        ball.GetComponent<ParticleSystem>().Play();
         // other ball already fired this function
-        if (otherBall.GetComponent<Movement>().enabled == false) { ball.SetActive(false); return; }
+        if (otherBall.GetComponent<Movement>().enabled == false) return;
 
 
         otherBall.GetComponent<Movement>().enabled = false;
         ball.GetComponent<Movement>().enabled = false;
 
-        ball.SetActive(false);
+
+
         instance.GetComponent<ChunkGenerator>().enabled = false;
 
         GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
@@ -97,8 +102,8 @@ public class GameManager : MonoBehaviour
         Movement blueMovement, redMovement;
         blueMovement = blue.GetComponent<Movement>();
         redMovement = red.GetComponent<Movement>();
-        blue.SetActive(true);
-        red.SetActive(true);
+        blue.GetComponent<Renderer>().enabled = true;
+        red.GetComponent<Renderer>().enabled = true;
 
 
 
