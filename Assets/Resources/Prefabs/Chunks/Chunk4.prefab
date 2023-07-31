@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1921209209730993361}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.4, y: 19.65, z: 0.0015141801}
+  m_LocalPosition: {x: -1.4, y: 17.22, z: 0.0015141801}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -179,6 +179,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3329894010180732705}
     m_Modifications:
+    - target: {fileID: 1917718064089930026, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
+      propertyPath: isLastChild
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7057433357444007584, guid: b146b7e09aa5a704c9e8de0e7fa1514a, type: 3}
       propertyPath: m_Name
       value: Obstacle (7)

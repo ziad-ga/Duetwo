@@ -7,7 +7,7 @@ TagManager:
   - Obstacle
   - Blue
   - Red
-  - Level
+  - Chunk
   layers:
   - Default
   - TransparentFX

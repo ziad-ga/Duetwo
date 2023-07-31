@@ -1,10 +1,10 @@
 using UnityEngine;
-
+using System;
 public class DefaultObstacleMovement : MonoBehaviour
 {
 
+    public bool isLastChild = false;
     public float ms;
-
 
     private bool isOnScreen = false;
 
@@ -18,11 +18,18 @@ public class DefaultObstacleMovement : MonoBehaviour
     {
         if (!GetComponent<Renderer>().isVisible && isOnScreen)
         {
+            if (transform.parent.childCount == 1) Destroy(transform.parent.gameObject);
             Destroy(gameObject);
         }
         if (GetComponent<Renderer>().isVisible && !isOnScreen)
         {
             isOnScreen = true;
+            if (isLastChild)
+            {
+                GameManager.lastChildAppeared = true;
+                GameManager.lastChildYpos = transform.position.y;
+            }
+
         }
     }
 }

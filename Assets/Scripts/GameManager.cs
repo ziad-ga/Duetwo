@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public static int currChunk = 1;
     public static GameObject chunkObj;
+    public static bool lastChildAppeared = false;
+    public static float lastChildYpos = 0;
+
     private void Awake()
     {
         if (instance != null)
@@ -77,10 +80,12 @@ public class GameManager : MonoBehaviour
     {
 
         yield return new WaitForSeconds(1);
-
-        Destroy(GameObject.FindGameObjectWithTag("Chunk"));
-        GameObject ChunkPrefab = (GameObject)Resources.Load("Prefabs/Chunks/Chunk" + currChunk);
-        chunkObj = Instantiate(ChunkPrefab, ChunkPrefab.transform.position, Quaternion.identity);
+        GameObject[] Chunks = GameObject.FindGameObjectsWithTag("Chunk");
+        foreach (var chunk in Chunks)
+        {
+            Destroy(chunk);
+        }
+        lastChildYpos = 0;
         instance.GetComponent<ChunkGenerator>().enabled = true;
 
 
