@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour
 
     static GameObject blue, red;
 
-    [SerializeField]
     public static int currChunk = 1;
     public static GameObject chunkObj;
     public static bool lastChildAppeared = false;

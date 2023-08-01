@@ -44,7 +44,7 @@ public class ChunkGenerator : MonoBehaviour
 
         // GameObject ChunkPrefab = (GameObject)Resources.Load("Prefabs/Chunks/Chunk1");
 
-        Vector3 pos = new Vector3(ChunkPrefab.transform.position.x, ChunkPrefab.transform.position.y + GameManager.lastChildYpos, ChunkPrefab.transform.position.z);
+        Vector3 pos = new Vector3(ChunkPrefab.transform.position.x, ChunkPrefab.transform.position.y + GameManager.lastChildYpos);
         return Instantiate(ChunkPrefab, pos, Quaternion.identity);
     }
 }

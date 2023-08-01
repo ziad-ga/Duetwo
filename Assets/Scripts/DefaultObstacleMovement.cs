@@ -4,7 +4,9 @@ public class DefaultObstacleMovement : MonoBehaviour
 {
 
     public bool isLastChild = false;
-    public float ms;
+
+    [NonSerialized]
+    public float ms = Defaults.NORMAL_OBSTACLE_SPEED;
 
     private bool isOnScreen = false;
 

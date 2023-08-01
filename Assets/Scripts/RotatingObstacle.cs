@@ -1,10 +1,9 @@
 using UnityEngine;
-
+using System;
 public class RotatingObstacle : MonoBehaviour
 {
-
-    [SerializeField]
-    private float angularVelocity;
+    [NonSerialized]
+    public float angularVelocity = Defaults.ROTATING_OBSTACLE_SPEED;
     void Start()
     {
         GetComponent<Rigidbody2D>().angularVelocity = angularVelocity;

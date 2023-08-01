@@ -5,14 +5,10 @@ public enum Direction { CLOCKWISE, COUNTERCLOCKWISE }
 
 public class Movement : MonoBehaviour
 {
+    public float angle; // Default value is in inspector
 
-    [HideInInspector]
-    public float angle;
+    private float RotationSpeed { get { return MovementSync.rotationSpeed; } }
 
-    [property: SerializeField]
-    public float RotationSpeed { get { return MovementSync.rotationSpeed; } }
-
-    [property: SerializeField]
     private float Radius { get { return MovementSync.radius; } }
 
     private float Height { get { return MovementSync.height; } }
@@ -45,7 +41,6 @@ public class Movement : MonoBehaviour
     void Start()
     {
         transform.position = new Vector3(Mathf.Cos(Mathf.Deg2Rad * angle) * Radius, Mathf.Sin(Mathf.Deg2Rad * angle) * Radius + Height);
-
     }
 
     void Update()
