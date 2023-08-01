@@ -1,18 +1,27 @@
 using UnityEngine;
 using System;
+using System.Collections;
 public class DefaultObstacleMovement : MonoBehaviour
 {
 
     public bool isLastChild = false;
 
-    [NonSerialized]
-    public float ms = Defaults.NORMAL_OBSTACLE_SPEED;
-
     private bool isOnScreen = false;
-
+    private Rigidbody2D rb;
     void Start()
     {
-        GetComponent<Rigidbody2D>().velocity = new Vector2(0, -ms);
+        rb = GetComponent<Rigidbody2D>();
+        rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.gameSpeed);
+        StartCoroutine(UpdateSpeed());
+    }
+    private IEnumerator UpdateSpeed()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(GameManager.gameUpdateInterval);
+            yield return null; // wait for game manager to update game speed
+            rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.gameSpeed);
+        }
     }
 
 

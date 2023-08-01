@@ -8,10 +8,16 @@ public class GameManager : MonoBehaviour
 
     static GameObject blue, red;
 
+
+    [SerializeField]
+    private static float score = 0;
+
     public static int currChunk = 1;
     public static GameObject chunkObj;
     public static bool lastChildAppeared = false;
     public static float lastChildYpos = 0;
+    public static float gameSpeed = 1;
+    public static float gameUpdateInterval = 5; //update game speed every x seconds
 
     private void Awake()
     {
@@ -26,7 +32,26 @@ public class GameManager : MonoBehaviour
         red = GameObject.FindGameObjectWithTag("Red");
 
     }
+    private void Start()
+    {
+        UI.scoreText.text = "0";
+        StartCoroutine(IncreaseGameSpeed());
+    }
+    private void Update()
+    {
+        score = score + Mathf.Exp(Time.deltaTime * gameSpeed * 40) * 0.1f;
+        UI.scoreText.text = ((int)score).ToString();
+    }
+    private IEnumerator IncreaseGameSpeed()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(gameUpdateInterval);
 
+            if (!Mathf.Approximately(gameSpeed, 3f)) gameSpeed += 0.1f;
+            else break;
+        }
+    }
 
     public static void HandleCollision(string name)
     {
@@ -37,7 +62,8 @@ public class GameManager : MonoBehaviour
             ball = blue;
             otherBall = red;
         }
-
+        gameSpeed = 1;
+        score = 0;
         AudioManager.PlayAudio("Collision");
         ball.GetComponent<Renderer>().enabled = false;
         ball.GetComponent<Collider2D>().enabled = false;
@@ -66,7 +92,7 @@ public class GameManager : MonoBehaviour
     private static IEnumerator RestartGame(GameObject[] obstacles)
     {
         yield return new WaitForSeconds(1);
-
+        UI.scoreText.text = "0";
         blue.GetComponent<Collider2D>().enabled = false;
         red.GetComponent<Collider2D>().enabled = false;
         foreach (var obstacle in obstacles)
@@ -107,8 +133,11 @@ public class GameManager : MonoBehaviour
 
 
         int counter = 1;
+        float OrgRotationSpeed = MovementSync.rotationSpeed;
+
         if (blueMovement.currDirection == Direction.COUNTERCLOCKWISE)
         {
+
             MovementSync.rotationSpeed = blueMovement.angle + 360;
 
             while (true)
@@ -128,7 +157,7 @@ public class GameManager : MonoBehaviour
                     blue.GetComponent<Collider2D>().enabled = true;
                     red.GetComponent<Movement>().enabled = true;
                     red.GetComponent<Collider2D>().enabled = true;
-                    MovementSync.rotationSpeed = MovementSync.defaultRotationSpeed;
+                    MovementSync.rotationSpeed = OrgRotationSpeed;
 
                     break;
                 }
@@ -155,7 +184,7 @@ public class GameManager : MonoBehaviour
                     blue.GetComponent<Collider2D>().enabled = true;
                     red.GetComponent<Movement>().enabled = true;
                     red.GetComponent<Collider2D>().enabled = true;
-                    MovementSync.rotationSpeed = MovementSync.defaultRotationSpeed;
+                    MovementSync.rotationSpeed = OrgRotationSpeed;
 
                     break;
                 }
