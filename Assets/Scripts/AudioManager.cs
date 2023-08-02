@@ -11,7 +11,7 @@ public class AudioManager : MonoBehaviour
     private AudioSource audioSource;
 
     public static AudioManager instance;
-    
+
     private void Awake()
     {
         if (instance != null)
@@ -21,9 +21,12 @@ public class AudioManager : MonoBehaviour
         }
         instance = this;
 
-
         audioSource = GetComponent<AudioSource>();
     }
+    
+    /// <summary>
+    /// Plays the audio clip with the given name
+    /// </summary>
     public static void PlayAudio(string name)
     {
         switch (name)

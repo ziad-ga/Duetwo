@@ -8,6 +8,7 @@ public class RotatingObstacle : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         rb.angularVelocity = Defaults.ROTATING_OBSTACLE_SPEED * GameManager.gameSpeed;
+        
         StartCoroutine(UpdateAngularVelocity());
     }
 
@@ -17,6 +18,7 @@ public class RotatingObstacle : MonoBehaviour
         {
             yield return new WaitForSeconds(GameManager.gameUpdateInterval);
             yield return null; // wait for game manager to update game speed
+
             rb.angularVelocity = Defaults.ROTATING_OBSTACLE_SPEED * GameManager.gameSpeed;
         }
     }

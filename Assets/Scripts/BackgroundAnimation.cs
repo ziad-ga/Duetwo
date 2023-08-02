@@ -4,14 +4,8 @@ using UnityEngine;
 
 public class BackgroundAnimation : MonoBehaviour
 {
-    public float rotationSpeed = 1f;
-    // Start is called before the first frame update
-    void Start()
-    {
+    public float rotationSpeed = 1f; // Set from inspector
 
-    }
-
-    // Update is called once per frame
     void Update()
     {
         transform.rotation *= Quaternion.Euler(0, 0, rotationSpeed * Time.deltaTime);

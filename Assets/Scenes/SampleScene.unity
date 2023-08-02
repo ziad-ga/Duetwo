@@ -792,18 +792,18 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 152
+    m_FontSize: 193
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
-    m_MaxSize: 300
+    m_MaxSize: 298
     m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 1
+    m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 999
+  m_Text: 0
 --- !u!222 &131855435
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3220,7 +3220,7 @@ Transform:
   m_GameObject: {fileID: 827053414}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: -3, z: 0}
+  m_LocalPosition: {x: 0, y: -3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5037,8 +5037,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1234655903}
-  - component: {fileID: 1234655904}
   - component: {fileID: 1234655905}
+  - component: {fileID: 1234655904}
   m_Layer: 0
   m_Name: BackgroundPivot
   m_TagString: Untagged
@@ -5367,7 +5367,7 @@ Transform:
   m_GameObject: {fileID: 1309746853}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -5385,8 +5385,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc12355801da9e1e9b0d7594cde34e96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  angle: 0
-  currDirection: 0
 --- !u!96 &1309746857
 TrailRenderer:
   serializedVersion: 3
@@ -11327,9 +11325,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1622602912}
+  - component: {fileID: 1622602915}
   - component: {fileID: 1622602913}
   - component: {fileID: 1622602914}
-  - component: {fileID: 1622602915}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -11364,8 +11362,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57cd2a7f3ce7df4f1b654cdacfa1cc4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: 0
-  intScore: 0
 --- !u!114 &1622602914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12156,9 +12152,9 @@ GameObject:
   - component: {fileID: 1757108490}
   - component: {fileID: 1757108491}
   - component: {fileID: 1757108492}
+  - component: {fileID: 1757108493}
   - component: {fileID: 1757108489}
   - component: {fileID: 1757108494}
-  - component: {fileID: 1757108493}
   m_Layer: 0
   m_Name: Red
   m_TagString: Red
@@ -12227,7 +12223,7 @@ Transform:
   m_GameObject: {fileID: 1757108486}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2, y: 0, z: 0}
+  m_LocalPosition: {x: -1, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -12245,8 +12241,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc12355801da9e1e9b0d7594cde34e96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  angle: 180
-  currDirection: 0
 --- !u!96 &1757108490
 TrailRenderer:
   serializedVersion: 3

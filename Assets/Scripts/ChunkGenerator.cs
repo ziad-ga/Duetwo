@@ -1,27 +1,28 @@
 using UnityEngine;
-
+using System.Linq;
 public class ChunkGenerator : MonoBehaviour
 {
 
-    private int chunkCount;
+    private GameObject[] chunks;
+    private  int currChunk = 0;
+    private GameObject chunkObj;
 
     void Awake()
     {
-
-        chunkCount = Resources.LoadAll("Prefabs/Chunks").Length;
+        chunks = (GameObject[])Resources.LoadAll("Prefabs/Chunks").Cast<GameObject>().ToArray();
     }
 
     private void Start()
     {
-        GameManager.chunkObj = GetNextChunk();
+        chunkObj = GetNextChunk();
     }
 
     private void Update()
     {
-        if (GameManager.chunkObj == null || GameManager.lastChildAppeared)
+        if (chunkObj == null || GameManager.lastChildAppeared)
         {
             GameManager.lastChildAppeared = false;
-            GameManager.chunkObj = GetNextChunk();
+            chunkObj = GetNextChunk();
         }
     }
 
@@ -34,13 +35,13 @@ public class ChunkGenerator : MonoBehaviour
         int temp;
         do
         {
-            temp = Random.Range(1, chunkCount + 1);
+            temp = Random.Range(0, chunks.Length);
 
-        } while (temp == GameManager.currChunk);
+        } while (temp == currChunk);
 
-        GameManager.currChunk = temp;
+        currChunk = temp;
 
-        GameObject ChunkPrefab = (GameObject)Resources.Load("Prefabs/Chunks/Chunk" + GameManager.currChunk);
+        GameObject ChunkPrefab = chunks[currChunk];
 
         // GameObject ChunkPrefab = (GameObject)Resources.Load("Prefabs/Chunks/Chunk1");
 

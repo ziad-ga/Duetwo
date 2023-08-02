@@ -1,23 +1,22 @@
 using System.Collections;
 using UnityEngine;
-
+using System.Linq;
 public class GameManager : MonoBehaviour
 {
 
     static GameManager instance;
-
-    static GameObject blue, red;
-
-
-    [SerializeField]
-    private static float score = 0;
-
-    public static int currChunk = 1;
-    public static GameObject chunkObj;
+    static GameObject playerObj;
     public static bool lastChildAppeared = false;
     public static float lastChildYpos = 0;
-    public static float gameSpeed = 1;
-    public static float gameUpdateInterval = 5; //update game speed every x seconds
+    public static float gameSpeed = 1; // speed multiplier for all game objects
+    public static float gameUpdateInterval = 5; // update game speed every x seconds
+
+
+
+    private static float score = 0;
+    private static Coroutine updateScoreCoroutine;
+
+
 
     private void Awake()
     {
@@ -28,20 +27,29 @@ public class GameManager : MonoBehaviour
         }
         instance = this;
 
-        blue = GameObject.FindGameObjectWithTag("Blue");
-        red = GameObject.FindGameObjectWithTag("Red");
-
+        playerObj = GameObject.FindGameObjectWithTag("Player");
     }
+
     private void Start()
     {
         UI.scoreText.text = "0";
+        score = 0;
+
         StartCoroutine(IncreaseGameSpeed());
+        updateScoreCoroutine = StartCoroutine(UpdateScore());
     }
-    private void Update()
+
+    private IEnumerator UpdateScore()
     {
-        score = score + Mathf.Exp(Time.deltaTime * gameSpeed * 40) * 0.1f;
-        UI.scoreText.text = ((int)score).ToString();
+        while (true)
+        {
+            yield return null;
+
+            score = score + Mathf.Exp(Time.deltaTime * gameSpeed * 40) * 0.1f;
+            UI.scoreText.text = ((int)score).ToString();
+        }
     }
+
     private IEnumerator IncreaseGameSpeed()
     {
         while (true)
@@ -53,37 +61,32 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public static void HandleCollision(string name)
+    public static void HandleCollision()
     {
-        GameObject ball = red, otherBall = blue;
+        // other ball already fired this function
+        if (playerObj.GetComponent<PlayerMovement>().enabled == false) return;
 
-        if (name == "Blue")
-        {
-            ball = blue;
-            otherBall = red;
-        }
         gameSpeed = 1;
         score = 0;
-        AudioManager.PlayAudio("Collision");
-        ball.GetComponent<Renderer>().enabled = false;
-        ball.GetComponent<Collider2D>().enabled = false;
-        ball.GetComponent<ParticleSystem>().Play();
-        // other ball already fired this function
-        if (otherBall.GetComponent<Movement>().enabled == false) return;
+        instance.StopCoroutine(updateScoreCoroutine);
 
-
-        otherBall.GetComponent<Movement>().enabled = false;
-        ball.GetComponent<Movement>().enabled = false;
-
-
-
-        instance.GetComponent<ChunkGenerator>().enabled = false;
+        playerObj.GetComponent<PlayerMovement>().enabled = false;
+        instance.GetComponent<ChunkGenerator>().enabled = false; // stop generating chunks until we clear the screen
 
         GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
 
         foreach (var obstacle in obstacles)
         {
             obstacle.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            obstacle.GetComponent<DefaultObstacleMovement>().StopAllCoroutines();
+
+            // for obstacles with multiple scripts i.e. rotating obstacles
+            var scripts = obstacle.GetComponents<MonoBehaviour>();
+            foreach (var script in scripts)
+            {
+                script.StopAllCoroutines();
+            }
+
         }
 
         instance.StartCoroutine(RestartGame(obstacles));
@@ -92,24 +95,32 @@ public class GameManager : MonoBehaviour
     private static IEnumerator RestartGame(GameObject[] obstacles)
     {
         yield return new WaitForSeconds(1);
+
         UI.scoreText.text = "0";
-        blue.GetComponent<Collider2D>().enabled = false;
-        red.GetComponent<Collider2D>().enabled = false;
-        foreach (var obstacle in obstacles)
+
+        foreach (var collider in playerObj.GetComponentsInChildren<Collider2D>())
         {
-            obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 10);
+            collider.enabled = false;
         }
 
-        instance.StartCoroutine(ResetObjects());
-        instance.StartCoroutine(ResetBalls());
+        foreach (var obstacle in obstacles)
+        {
+            obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 15);
+        }
 
+        instance.StartCoroutine(ResetChunks());
+        instance.StartCoroutine(ResetPlayer());
 
     }
 
-    private static IEnumerator ResetObjects()
+    /// <summary>
+    /// Destroy all chunks and enable chunk generator
+    /// </summary>
+    private static IEnumerator ResetChunks()
     {
 
         yield return new WaitForSeconds(1);
+
         GameObject[] Chunks = GameObject.FindGameObjectsWithTag("Chunk");
         foreach (var chunk in Chunks)
         {
@@ -117,47 +128,55 @@ public class GameManager : MonoBehaviour
         }
         lastChildYpos = 0;
         instance.GetComponent<ChunkGenerator>().enabled = true;
-
-
     }
 
-    private static IEnumerator ResetBalls()
+    /// <summary>
+    /// Reset player smoothly
+    /// </summary>
+    private static IEnumerator ResetPlayer()
     {
 
-        Movement blueMovement, redMovement;
-        blueMovement = blue.GetComponent<Movement>();
-        redMovement = red.GetComponent<Movement>();
-        blue.GetComponent<Renderer>().enabled = true;
-        red.GetComponent<Renderer>().enabled = true;
 
+        foreach (var renderer in playerObj.GetComponentsInChildren<Renderer>())
+        {
+            renderer.enabled = true;
+        }
 
+        PlayerMovement playerMovement = playerObj.GetComponent<PlayerMovement>();
+        float OrgRotationSpeed = PlayerMovement.rotationSpeed;
 
         int counter = 1;
-        float OrgRotationSpeed = MovementSync.rotationSpeed;
 
-        if (blueMovement.currDirection == Direction.COUNTERCLOCKWISE)
+        if (PlayerMovement.currDirection == Direction.COUNTERCLOCKWISE)
         {
 
-            MovementSync.rotationSpeed = blueMovement.angle + 360;
+            PlayerMovement.rotationSpeed = playerMovement.angle + 360;
 
             while (true)
             {
                 yield return null;
-                float tempAngle = blueMovement.angle;
-                blueMovement.RotateClockWise();
-                redMovement.RotateClockWise();
-                if (blueMovement.angle > tempAngle)
+
+                float tempAngle = playerMovement.angle;
+                playerMovement.Rotate(Direction.CLOCKWISE);
+                if (playerMovement.angle > tempAngle)
                 {
                     if (counter > 0)
                     {
                         counter--;
                         continue;
                     }
-                    blue.GetComponent<Movement>().enabled = true;
-                    blue.GetComponent<Collider2D>().enabled = true;
-                    red.GetComponent<Movement>().enabled = true;
-                    red.GetComponent<Collider2D>().enabled = true;
-                    MovementSync.rotationSpeed = OrgRotationSpeed;
+                    foreach (var collider in playerObj.GetComponentsInChildren<Collider2D>())
+                    {
+                        collider.enabled = true;
+                    }
+
+                    // reset rotation to exactly 0
+                    playerMovement.transform.Rotate(new Vector3(0, 0, -playerMovement.transform.rotation.eulerAngles.z)); 
+
+                    PlayerMovement.rotationSpeed = OrgRotationSpeed;
+                    playerMovement.enabled = true;
+                    
+                    updateScoreCoroutine = instance.StartCoroutine("UpdateScore");
 
                     break;
                 }
@@ -165,26 +184,33 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            MovementSync.rotationSpeed = 720 - blueMovement.angle;
+            PlayerMovement.rotationSpeed = 720 - playerMovement.angle;
 
             while (true)
             {
                 yield return null;
-                float tempAngle = blueMovement.angle;
-                blueMovement.RotateCounterClockWise();
-                redMovement.RotateCounterClockWise();
-                if (blueMovement.angle < tempAngle)
+
+                float tempAngle = playerMovement.angle;
+                playerMovement.Rotate(Direction.COUNTERCLOCKWISE);
+                if (playerMovement.angle < tempAngle)
                 {
                     if (counter > 0)
                     {
                         counter--;
                         continue;
                     }
-                    blue.GetComponent<Movement>().enabled = true;
-                    blue.GetComponent<Collider2D>().enabled = true;
-                    red.GetComponent<Movement>().enabled = true;
-                    red.GetComponent<Collider2D>().enabled = true;
-                    MovementSync.rotationSpeed = OrgRotationSpeed;
+                    foreach (var collider in playerObj.GetComponentsInChildren<Collider2D>())
+                    {
+                        collider.enabled = true;
+                    }
+
+                    // reset rotation to exactly 0
+                    playerMovement.transform.Rotate(new Vector3(0, 0, -playerMovement.transform.rotation.eulerAngles.z));
+
+                    PlayerMovement.rotationSpeed = OrgRotationSpeed;
+                    playerMovement.enabled = true;
+
+                    updateScoreCoroutine = instance.StartCoroutine("UpdateScore");
 
                     break;
                 }
@@ -195,5 +221,4 @@ public class GameManager : MonoBehaviour
 
 
     }
-
 }
