@@ -2,18 +2,17 @@ using UnityEngine;
 using System.Collections;
 public class PlayerMovement : MonoBehaviour
 {
-    public static float rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.gameSpeed;
+    public float rotationSpeed;
+    public float height = Defaults.BALL_HEIGHT;
+    public Direction currDirection = Direction.CLOCKWISE;
 
-    public static float height = Defaults.BALL_HEIGHT;
-    public static Direction currDirection = Direction.CLOCKWISE;
-
-    public float angle { get { return transform.rotation.eulerAngles.z; } }
+    public float Angle { get { return transform.rotation.eulerAngles.z; } }
     private void Start()
     {
         transform.position = new Vector3(transform.position.x, height);
-    }
-    private void OnEnable() {
+        rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.GameSpeed;
         StartCoroutine(UpdateRotationSpeed());
+    
     }
     private void OnDisable() {
         StopAllCoroutines();
@@ -61,16 +60,17 @@ public class PlayerMovement : MonoBehaviour
         transform.Rotate(0, 0, rotationSpeed * (int)dir * Time.deltaTime);
 
     }
-
-
-    private IEnumerator UpdateRotationSpeed()
+    /// <summary>
+    /// Update rotation speed according to game speed every game speed update interval
+    /// </summary>
+    public IEnumerator UpdateRotationSpeed()
     {
         while (true)
         {
-            yield return new WaitForSeconds(GameManager.gameUpdateInterval);
+            yield return new WaitForSeconds(GameManager.GameUpdateInterval);
             yield return null; // wait for game manager to update game speed
             
-            rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.gameSpeed;
+            rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.GameSpeed;
         }
     }
 }

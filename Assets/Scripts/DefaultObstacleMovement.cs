@@ -10,22 +10,11 @@ public class DefaultObstacleMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.gameSpeed);
+        rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.GameSpeed);
 
         StartCoroutine(UpdateSpeed());
     }
-    private IEnumerator UpdateSpeed()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(GameManager.gameUpdateInterval);
-            yield return null; // wait for game manager to update game speed
-
-            rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.gameSpeed);
-        }
-    }
-
-
+    
     private void Update()
     {
         // destroy obstacle if it is not visible anymore
@@ -42,10 +31,20 @@ public class DefaultObstacleMovement : MonoBehaviour
             isOnScreen = true;
             if (isLastChild)
             {
-                GameManager.lastChildAppeared = true;
-                GameManager.lastChildYpos = transform.position.y;
+                GameManager.LastChildAppeared = true;
+                GameManager.LastChildYpos = transform.position.y;
             }
 
+        }
+    }
+    private IEnumerator UpdateSpeed()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(GameManager.GameUpdateInterval);
+            yield return null; // wait for game manager to update game speed
+
+            rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.GameSpeed);
         }
     }
 }

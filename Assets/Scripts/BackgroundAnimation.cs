@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class BackgroundAnimation : MonoBehaviour
 {
-    public float rotationSpeed = 1f; // Set from inspector
+    [SerializeField]
+    private float rotationSpeed = 1f; // set from inspector
 
     void Update()
     {

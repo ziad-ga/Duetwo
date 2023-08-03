@@ -2235,7 +2235,7 @@ AudioSource:
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 256
+  Priority: 0
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -3240,6 +3240,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7400b110864085dd2a18bae33db6cad2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotationSpeed: 0
+  height: -2
+  currDirection: -1
 --- !u!1001 &842173153
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11362,6 +11365,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57cd2a7f3ce7df4f1b654cdacfa1cc4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  score: 0
+  _gameSpeed: 1
+  _gameUpdateInterval: 5
+  _lastChildAppeared: 0
+  _lastChildYpos: 0
 --- !u!114 &1622602914
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -19,9 +19,9 @@ public class ChunkGenerator : MonoBehaviour
 
     private void Update()
     {
-        if (chunkObj == null || GameManager.lastChildAppeared)
+        if (chunkObj == null || GameManager.LastChildAppeared)
         {
-            GameManager.lastChildAppeared = false;
+            GameManager.LastChildAppeared = false;
             chunkObj = GetNextChunk();
         }
     }
@@ -45,7 +45,7 @@ public class ChunkGenerator : MonoBehaviour
 
         // GameObject ChunkPrefab = (GameObject)Resources.Load("Prefabs/Chunks/Chunk1");
 
-        Vector3 pos = new Vector3(ChunkPrefab.transform.position.x, ChunkPrefab.transform.position.y + GameManager.lastChildYpos);
+        Vector3 pos = new Vector3(ChunkPrefab.transform.position.x, ChunkPrefab.transform.position.y + GameManager.LastChildYpos);
         return Instantiate(ChunkPrefab, pos, Quaternion.identity);
     }
 }
