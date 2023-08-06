@@ -14,9 +14,6 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine(UpdateRotationSpeed());
     
     }
-    private void OnDisable() {
-        StopAllCoroutines();
-    }
     void Update()
     {
         if (SystemInfo.deviceType == DeviceType.Desktop)
@@ -68,8 +65,9 @@ public class PlayerMovement : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(GameManager.GameUpdateInterval);
-            yield return null; // wait for game manager to update game speed
-            
+            yield return null; // wait for game manager to update game speed            
+            yield return new WaitUntil(() => !GameManager.IsResetting);
+
             rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.GameSpeed;
         }
     }

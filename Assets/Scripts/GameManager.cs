@@ -4,28 +4,30 @@ using System.Linq;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-
     private Coroutine updateScoreCoroutine;
     private PlayerMovement playerMovement;
 
     [SerializeField]
-    private float score = 0;
+    private float _score = 0;
 
     [SerializeField]
     private float _gameSpeed = 1; // speed multiplier for all game objects
     [SerializeField]
-    private float _gameUpdateInterval = 5; // update game speed every x seconds
+    private bool _isResetting = false;
     [SerializeField]
     private bool _lastChildAppeared = false;
     [SerializeField]
     private float _lastChildYpos = 0;
+    [SerializeField]
+    private float _hp;
 
-
-    public static float GameSpeed { get { return instance._gameSpeed; } set { instance._gameSpeed = value; } }
-    public static float GameUpdateInterval { get { return instance._gameUpdateInterval; } }
+    public static float GameSpeed { get { return instance._gameSpeed; } }
+    public static float GameUpdateInterval { get { return Defaults.GAME_UPDATE_INTERVAL; } }
+    public static bool IsResetting { get { return instance._isResetting; } }
     public static bool LastChildAppeared { get { return instance._lastChildAppeared; } set { instance._lastChildAppeared = value; } }
     public static float LastChildYpos { get { return instance._lastChildYpos; } set { instance._lastChildYpos = value; } }
-
+    public static float HP { get { return instance._hp; } }
+    public static float Score { get { return instance._score; } }
     private void Awake()
     {
         if (instance != null)
@@ -36,28 +38,28 @@ public class GameManager : MonoBehaviour
         instance = this;
 
         playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+        _hp = Defaults.HP;
     }
 
     private void Start()
     {
-        UI.ScoreText.text = "0";
-        score = 0;
+        _score = 0;
 
         StartCoroutine(IncreaseGameSpeed());
-        updateScoreCoroutine = StartCoroutine(UpdateScore());
+        updateScoreCoroutine = StartCoroutine(UpdateStats());
     }
 
     /// <summary>
-    /// Update internal and UI score every frame
+    /// Update internal score and HP every frame
     /// </summary>
-    private IEnumerator UpdateScore()
+    private IEnumerator UpdateStats()
     {
         while (true)
         {
             yield return null;
-
-            score = score + Mathf.Exp(Time.deltaTime * _gameSpeed * 40) * 0.1f;
-            UI.ScoreText.text = ((int)score).ToString();
+            yield return new WaitUntil(() => !GameManager.IsResetting);
+            _score = _score + Mathf.Exp(Time.deltaTime * _gameSpeed * 40) * 0.1f;
+            _hp = Mathf.Clamp(_hp + Time.deltaTime * 5, 0, 100);
         }
     }
 
@@ -69,21 +71,25 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(_gameUpdateInterval);
+            yield return new WaitForSeconds(Defaults.GAME_UPDATE_INTERVAL);
+            yield return new WaitUntil(() => !GameManager.IsResetting);
 
             if (!Mathf.Approximately(_gameSpeed, 3f)) _gameSpeed += 0.1f;
             else break;
         }
     }
-
+    /// <summary>
+    /// Put game in a resetting state and decide whether to restart the game or only reset current chunks
+    /// </summary>
     public static void HandleCollision()
     {
         // other ball already fired this function
         if (instance.playerMovement.enabled == false) return;
 
-        GameSpeed = 1;
-        instance.score = 0;
-        instance.StopCoroutine(instance.updateScoreCoroutine);
+        instance._isResetting = true;
+        instance._hp -= 20;
+
+        instance._gameSpeed = Mathf.Clamp(instance._gameSpeed - 0.3f, 1, 3);
 
         instance.playerMovement.enabled = false;
         instance.GetComponent<ChunkGenerator>().enabled = false; // stop generating chunks until we clear the screen
@@ -93,25 +99,52 @@ public class GameManager : MonoBehaviour
         foreach (var obstacle in obstacles)
         {
             obstacle.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            obstacle.GetComponent<DefaultObstacleMovement>().StopAllCoroutines();
-
-            // for obstacles with multiple scripts i.e. rotating obstacles
-            var scripts = obstacle.GetComponents<MonoBehaviour>();
-            foreach (var script in scripts)
-            {
-                script.StopAllCoroutines();
-            }
-
         }
 
-        instance.StartCoroutine(instance.RestartGame(obstacles));
+        if (instance._hp > 0) instance.StartCoroutine(instance.RestartChunk(obstacles));
+        else instance.StartCoroutine(instance.RestartGame(obstacles));
     }
 
+    /// <summary>
+    /// Push all obstacles above the screen and continue playing
+    /// </summary>
+    private IEnumerator RestartChunk(GameObject[] obstacles)
+    {
+        yield return new WaitForSeconds(1);
+
+        foreach (var collider in playerMovement.GetComponentsInChildren<Collider2D>())
+        {
+            collider.enabled = false;
+        }
+        GameObject firstObstacle = obstacles.OrderBy(x => x.transform.position.y).First();
+        float resetSpeed = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0)).y - firstObstacle.transform.position.y;
+        foreach (var obstacle in obstacles)
+        {
+            obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, resetSpeed);
+        }
+
+        instance.StartCoroutine(ResetPlayer());
+
+        yield return new WaitForSeconds(1);
+
+        foreach (var obstacle in obstacles)
+        {
+            obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.GameSpeed);
+        }
+
+        instance.GetComponent<ChunkGenerator>().enabled = true;
+
+    }
+    /// <summary>
+    /// Reset game to initial state
+    /// </summary>
     private IEnumerator RestartGame(GameObject[] obstacles)
     {
         yield return new WaitForSeconds(1);
 
-        UI.ScoreText.text = "0";
+        instance._score = 0;
+        instance._gameSpeed = 1;
+        instance._hp = Defaults.HP;
 
         foreach (var collider in playerMovement.GetComponentsInChildren<Collider2D>())
         {
@@ -120,10 +153,10 @@ public class GameManager : MonoBehaviour
 
         foreach (var obstacle in obstacles)
         {
-            obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 15);
+            obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 30);
         }
 
-        instance.StartCoroutine(ResetChunks());
+        instance.StartCoroutine(DestroyChunks());
         instance.StartCoroutine(ResetPlayer());
 
     }
@@ -131,7 +164,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Destroy all chunks and enable chunk generator
     /// </summary>
-    private IEnumerator ResetChunks()
+    private IEnumerator DestroyChunks()
     {
 
         yield return new WaitForSeconds(1);
@@ -184,10 +217,9 @@ public class GameManager : MonoBehaviour
                     playerMovement.transform.Rotate(new Vector3(0, 0, -playerMovement.transform.rotation.eulerAngles.z));
 
                     playerMovement.rotationSpeed = Defaults.BALL_ROTATION_SPEED;
-                    playerMovement.StartCoroutine(playerMovement.UpdateRotationSpeed());
                     playerMovement.enabled = true;
 
-                    updateScoreCoroutine = instance.StartCoroutine("UpdateScore");
+                    instance._isResetting = false;
 
                     break;
                 }
@@ -218,11 +250,9 @@ public class GameManager : MonoBehaviour
                     // reset rotation to exactly 0
                     playerMovement.transform.Rotate(new Vector3(0, 0, -playerMovement.transform.rotation.eulerAngles.z));
 
-                    playerMovement.rotationSpeed = Defaults.BALL_ROTATION_SPEED;
-                    playerMovement.StartCoroutine(playerMovement.UpdateRotationSpeed());
+                    playerMovement.rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.GameSpeed;
                     playerMovement.enabled = true;
-
-                    updateScoreCoroutine = instance.StartCoroutine("UpdateScore");
+                    instance._isResetting = false;
 
                     break;
                 }

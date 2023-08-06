@@ -20,6 +20,7 @@ public class RotatingObstacle : MonoBehaviour
         {
             yield return new WaitForSeconds(GameManager.GameUpdateInterval);
             yield return null; // wait for game manager to update game speed
+            yield return new WaitUntil(() => !GameManager.IsResetting);
 
             rb.angularVelocity = Defaults.ROTATING_OBSTACLE_SPEED * GameManager.GameSpeed;
         }
