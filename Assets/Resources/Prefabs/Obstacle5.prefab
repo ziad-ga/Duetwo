@@ -278,7 +278,7 @@ Animator:
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: dd38734a14b74d2d8bdee9657ab82729, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 2
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
@@ -299,7 +299,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec7b531563a637f5f9967b38436a09e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ms: 2
+  isLastChild: 0
 --- !u!114 &2014992569514923342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,4 +312,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe1208209e0c86aa48400320a53758e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  angularVelocity: 250

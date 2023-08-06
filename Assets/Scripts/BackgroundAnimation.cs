@@ -9,6 +9,6 @@ public class BackgroundAnimation : MonoBehaviour
 
     void Update()
     {
-        transform.rotation *= Quaternion.Euler(0, 0, rotationSpeed * Time.deltaTime);
+        transform.rotation *= Quaternion.Euler(0, 0, rotationSpeed * Time.unscaledDeltaTime);
     }
 }

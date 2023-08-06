@@ -45,7 +45,7 @@ public class DefaultObstacleMovement : MonoBehaviour
             yield return new WaitForSeconds(GameManager.GameUpdateInterval);
             yield return null; // wait for game manager to update game speed
             yield return new WaitUntil(() => !GameManager.IsResetting);
-
+            
             rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.GameSpeed);
         }
     }

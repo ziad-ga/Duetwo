@@ -15,13 +15,13 @@ public class BackgroundRandomAnimation : MonoBehaviour
     }
     private IEnumerator Animate()
     {
-        yield return new WaitForSeconds(animationDelay);
+        yield return new WaitForSecondsRealtime(animationDelay);
 
         while (true)
         {
-            transform.DORotate(new Vector3(0, 0, 60 * animationDirection), 0.5f, RotateMode.LocalAxisAdd);
+            transform.DORotate(new Vector3(0, 0, 60 * animationDirection), 0.5f, RotateMode.LocalAxisAdd).SetUpdate(true);
             
-            yield return new WaitForSeconds(0.5f + animationDelay);
+            yield return new WaitForSecondsRealtime(0.5f + animationDelay);
         }
     }
 }

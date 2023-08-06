@@ -20,7 +20,7 @@ public class UI : MonoBehaviour
 
         _scoreText = transform.Find("Score").GetComponent<Text>();
         _scoreText.text = "0";
-        _scoreText.transform.DOScale(1.2f, 0.5f).SetLoops(-1, LoopType.Yoyo).SetDelay(0.5f);
+        _scoreText.transform.DOScale(1.2f, 0.5f).SetLoops(-1, LoopType.Yoyo).SetDelay(0.5f).SetUpdate(true);
         HP = Defaults.HP / 100;
         _healthBar.SetActive(true);
     }

@@ -58,7 +58,8 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
             yield return new WaitUntil(() => !GameManager.IsResetting);
-            _score = _score + Mathf.Exp(Time.deltaTime * _gameSpeed * 40) * 0.1f;
+
+            _score = _score + Mathf.Exp(Time.deltaTime * _gameSpeed * 40) * 0.1f * Time.timeScale;
             _hp = Mathf.Clamp(_hp + Time.deltaTime * 5, 0, 100);
         }
     }
@@ -73,36 +74,11 @@ public class GameManager : MonoBehaviour
         {
             yield return new WaitForSeconds(Defaults.GAME_UPDATE_INTERVAL);
             yield return new WaitUntil(() => !GameManager.IsResetting);
+            // yield return new WaitUntil(() => !GameManager.IsPaused);
 
             if (!Mathf.Approximately(_gameSpeed, 3f)) _gameSpeed += 0.1f;
             else break;
         }
-    }
-    /// <summary>
-    /// Put game in a resetting state and decide whether to restart the game or only reset current chunks
-    /// </summary>
-    public static void HandleCollision()
-    {
-        // other ball already fired this function
-        if (instance.playerMovement.enabled == false) return;
-
-        instance._isResetting = true;
-        instance._hp -= 20;
-
-        instance._gameSpeed = Mathf.Clamp(instance._gameSpeed - 0.3f, 1, 3);
-
-        instance.playerMovement.enabled = false;
-        instance.GetComponent<ChunkGenerator>().enabled = false; // stop generating chunks until we clear the screen
-
-        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-
-        foreach (var obstacle in obstacles)
-        {
-            obstacle.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-        }
-
-        if (instance._hp > 0) instance.StartCoroutine(instance.RestartChunk(obstacles));
-        else instance.StartCoroutine(instance.RestartGame(obstacles));
     }
 
     /// <summary>
@@ -258,5 +234,41 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Put game in a resetting state and decide whether to restart the game or only reset current chunks
+    /// </summary>
+    public static void HandleCollision()
+    {
+        // other ball already fired this function
+        if (instance.playerMovement.enabled == false) return;
+
+        instance._isResetting = true;
+        instance._hp -= 20;
+
+        instance._gameSpeed = Mathf.Clamp(instance._gameSpeed - 0.3f, 1, 3);
+
+        instance.playerMovement.enabled = false;
+        instance.GetComponent<ChunkGenerator>().enabled = false; // stop generating chunks until we clear the screen
+
+        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+
+        foreach (var obstacle in obstacles)
+        {
+            obstacle.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        }
+
+        if (instance._hp > 0) instance.StartCoroutine(instance.RestartChunk(obstacles));
+        else instance.StartCoroutine(instance.RestartGame(obstacles));
+    }
+
+    public static void PauseGame()
+    {
+        Time.timeScale = 0;
+    }
+    public static void ResumeGame()
+    {
+        Time.timeScale = 1;
     }
 }
