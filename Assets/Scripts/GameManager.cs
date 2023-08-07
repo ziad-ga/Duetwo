@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using System.Linq;
@@ -166,72 +167,37 @@ public class GameManager : MonoBehaviour
 
         int counter = 1;
 
-        if (playerMovement.currDirection == Direction.COUNTERCLOCKWISE)
+        Direction resetDirection = (playerMovement.currDirection == Direction.COUNTERCLOCKWISE) ? Direction.CLOCKWISE : Direction.COUNTERCLOCKWISE;
+        playerMovement.rotationSpeed = (playerMovement.currDirection == Direction.COUNTERCLOCKWISE) ? playerMovement.Angle + 360 : 720 - playerMovement.Angle;
+        Func<float, float, bool> ContinueSpinCondition = (playerMovement.currDirection == Direction.COUNTERCLOCKWISE) ? (newAngle, oldAngle) => newAngle > oldAngle : (newAngle, oldAngle) => newAngle < oldAngle;
+
+        while (true)
         {
+            yield return null;
 
-            playerMovement.rotationSpeed = playerMovement.Angle + 360;
-
-            while (true)
+            float tempAngle = playerMovement.Angle;
+            playerMovement.Rotate(resetDirection);
+            if (ContinueSpinCondition(playerMovement.Angle, tempAngle))
             {
-                yield return null;
-
-                float tempAngle = playerMovement.Angle;
-                playerMovement.Rotate(Direction.CLOCKWISE);
-                if (playerMovement.Angle > tempAngle)
+                if (counter > 0)
                 {
-                    if (counter > 0)
-                    {
-                        counter--;
-                        continue;
-                    }
-                    foreach (var collider in playerMovement.GetComponentsInChildren<Collider2D>())
-                    {
-                        collider.enabled = true;
-                    }
-
-                    // reset rotation to exactly 0
-                    playerMovement.transform.Rotate(new Vector3(0, 0, -playerMovement.transform.rotation.eulerAngles.z));
-
-                    playerMovement.rotationSpeed = Defaults.BALL_ROTATION_SPEED;
-                    playerMovement.enabled = true;
-
-                    instance._isResetting = false;
-
-                    break;
+                    counter--;
+                    continue;
                 }
-            }
-        }
-        else
-        {
-            playerMovement.rotationSpeed = 720 - playerMovement.Angle;
-
-            while (true)
-            {
-                yield return null;
-
-                float tempAngle = playerMovement.Angle;
-                playerMovement.Rotate(Direction.COUNTERCLOCKWISE);
-                if (playerMovement.Angle < tempAngle)
+                foreach (var collider in playerMovement.GetComponentsInChildren<Collider2D>())
                 {
-                    if (counter > 0)
-                    {
-                        counter--;
-                        continue;
-                    }
-                    foreach (var collider in playerMovement.GetComponentsInChildren<Collider2D>())
-                    {
-                        collider.enabled = true;
-                    }
-
-                    // reset rotation to exactly 0
-                    playerMovement.transform.Rotate(new Vector3(0, 0, -playerMovement.transform.rotation.eulerAngles.z));
-
-                    playerMovement.rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.GameSpeed;
-                    playerMovement.enabled = true;
-                    instance._isResetting = false;
-
-                    break;
+                    collider.enabled = true;
                 }
+
+                // reset rotation to exactly 0
+                playerMovement.transform.Rotate(new Vector3(0, 0, -playerMovement.transform.rotation.eulerAngles.z));
+
+                playerMovement.rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.GameSpeed;
+                playerMovement.enabled = true;
+
+                instance._isResetting = false;
+
+                break;
             }
         }
     }

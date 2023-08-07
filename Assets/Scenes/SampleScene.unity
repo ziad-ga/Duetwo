@@ -5177,8 +5177,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1234655903}
-  - component: {fileID: 1234655905}
   - component: {fileID: 1234655904}
+  - component: {fileID: 1234655906}
   m_Layer: 0
   m_Name: BackgroundPivot
   m_TagString: Untagged
@@ -5216,26 +5216,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationSpeed: 2.5
---- !u!95 &1234655905
-Animator:
-  serializedVersion: 5
+--- !u!114 &1234655906
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1234655902}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 564f29b5d2533b8bba70cb7cfb016479, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 2
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3025768820cf93ff9a96928b751f3392, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleFactor: 1.05
 --- !u!1001 &1237153531
 PrefabInstance:
   m_ObjectHideFlags: 0
