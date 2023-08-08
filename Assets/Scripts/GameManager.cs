@@ -40,11 +40,11 @@ public class GameManager : MonoBehaviour
 
         playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
         _hp = Defaults.HP;
+        _score = 0;
     }
 
     private void Start()
     {
-        _score = 0;
 
         StartCoroutine(IncreaseGameSpeed());
         updateScoreCoroutine = StartCoroutine(UpdateStats());
