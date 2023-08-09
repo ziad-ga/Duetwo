@@ -2,33 +2,36 @@ using System;
 using System.Collections;
 using UnityEngine;
 using System.Linq;
+using DG.Tweening;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    private Coroutine updateScoreCoroutine;
     private PlayerMovement playerMovement;
+    private ChunkGenerator chunkGenerator;
 
-    [SerializeField]
-    private float _score = 0;
-
-    [SerializeField]
-    private float _gameSpeed = 1; // speed multiplier for all game objects
     [SerializeField]
     private bool _isResetting = false;
+    [SerializeField]
+    private bool _inPlayMode = false;
+    [SerializeField]
+    private float _gameSpeed = 1; // speed multiplier for all game objects
     [SerializeField]
     private bool _lastChildAppeared = false;
     [SerializeField]
     private float _lastChildYpos = 0;
     [SerializeField]
     private float _hp;
+    [SerializeField]
+    private float _score = 0;
 
-    public static float GameSpeed { get { return instance._gameSpeed; } }
-    public static float GameUpdateInterval { get { return Defaults.GAME_UPDATE_INTERVAL; } }
     public static bool IsResetting { get { return instance._isResetting; } }
+    public static bool InPlayMode { get { return instance._inPlayMode; } }
+    public static float GameSpeed { get { return instance._gameSpeed; } }
     public static bool LastChildAppeared { get { return instance._lastChildAppeared; } set { instance._lastChildAppeared = value; } }
     public static float LastChildYpos { get { return instance._lastChildYpos; } set { instance._lastChildYpos = value; } }
     public static float HP { get { return instance._hp; } }
     public static float Score { get { return instance._score; } }
+    public static float GameUpdateInterval { get { return Defaults.GAME_UPDATE_INTERVAL; } }
     private void Awake()
     {
         if (instance != null)
@@ -39,15 +42,16 @@ public class GameManager : MonoBehaviour
         instance = this;
 
         playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+        chunkGenerator = GetComponent<ChunkGenerator>();
         _hp = Defaults.HP;
         _score = 0;
     }
 
     private void Start()
     {
-
-        StartCoroutine(IncreaseGameSpeed());
-        updateScoreCoroutine = StartCoroutine(UpdateStats());
+        TransitionToMenu(false);
+        // StartCoroutine(IncreaseGameSpeed());
+        // StartCoroutine(UpdateStats());
     }
 
     /// <summary>
@@ -58,7 +62,7 @@ public class GameManager : MonoBehaviour
         while (true)
         {
             yield return null;
-            yield return new WaitUntil(() => !GameManager.IsResetting);
+            yield return new WaitUntil(() => !GameManager.IsResetting && GameManager.InPlayMode);
 
             _score = _score + Mathf.Exp(Time.deltaTime * _gameSpeed * 40) * 0.1f * Time.timeScale;
             _hp = Mathf.Clamp(_hp + Time.deltaTime * 5, 0, 100);
@@ -74,8 +78,7 @@ public class GameManager : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(Defaults.GAME_UPDATE_INTERVAL);
-            yield return new WaitUntil(() => !GameManager.IsResetting);
-            // yield return new WaitUntil(() => !GameManager.IsPaused);
+            yield return new WaitUntil(() => !GameManager.IsResetting && GameManager.InPlayMode);
 
             if (!Mathf.Approximately(_gameSpeed, 3f)) _gameSpeed += 0.1f;
             else break;
@@ -109,7 +112,7 @@ public class GameManager : MonoBehaviour
             obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.GameSpeed);
         }
 
-        instance.GetComponent<ChunkGenerator>().enabled = true;
+        instance.chunkGenerator.enabled = true;
 
     }
     /// <summary>
@@ -132,7 +135,6 @@ public class GameManager : MonoBehaviour
         {
             obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 30);
         }
-
         instance.StartCoroutine(DestroyChunks());
         instance.StartCoroutine(ResetPlayer());
 
@@ -141,9 +143,8 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Destroy all chunks and enable chunk generator
     /// </summary>
-    private IEnumerator DestroyChunks()
+    private IEnumerator DestroyChunks(bool generateAgain = true)
     {
-
         yield return new WaitForSeconds(1);
 
         GameObject[] Chunks = GameObject.FindGameObjectsWithTag("Chunk");
@@ -152,7 +153,9 @@ public class GameManager : MonoBehaviour
             Destroy(chunk);
         }
         LastChildYpos = 0;
-        instance.GetComponent<ChunkGenerator>().enabled = true;
+
+        if (generateAgain) instance.chunkGenerator.enabled = true;
+        else instance.chunkGenerator.enabled = false;
     }
 
     /// <summary>
@@ -168,7 +171,7 @@ public class GameManager : MonoBehaviour
         int counter = 1;
 
         Direction resetDirection = (playerMovement.currDirection == Direction.COUNTERCLOCKWISE) ? Direction.CLOCKWISE : Direction.COUNTERCLOCKWISE;
-        playerMovement.rotationSpeed = (playerMovement.currDirection == Direction.COUNTERCLOCKWISE) ? playerMovement.Angle + 360 : 720 - playerMovement.Angle;
+        float speed = (playerMovement.currDirection == Direction.COUNTERCLOCKWISE) ? playerMovement.Angle + 360 : 720 - playerMovement.Angle;
         Func<float, float, bool> ContinueSpinCondition = (playerMovement.currDirection == Direction.COUNTERCLOCKWISE) ? (newAngle, oldAngle) => newAngle > oldAngle : (newAngle, oldAngle) => newAngle < oldAngle;
 
         while (true)
@@ -176,7 +179,7 @@ public class GameManager : MonoBehaviour
             yield return null;
 
             float tempAngle = playerMovement.Angle;
-            playerMovement.Rotate(resetDirection);
+            playerMovement.Rotate(resetDirection, speed);
             if (ContinueSpinCondition(playerMovement.Angle, tempAngle))
             {
                 if (counter > 0)
@@ -216,7 +219,7 @@ public class GameManager : MonoBehaviour
         instance._gameSpeed = Mathf.Clamp(instance._gameSpeed - 0.3f, 1, 3);
 
         instance.playerMovement.enabled = false;
-        instance.GetComponent<ChunkGenerator>().enabled = false; // stop generating chunks until we clear the screen
+        instance.chunkGenerator.enabled = false; // stop generating chunks until we clear the screen
 
         GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
 
@@ -236,5 +239,73 @@ public class GameManager : MonoBehaviour
     public static void ResumeGame()
     {
         Time.timeScale = 1;
+    }
+    public static void TransitionToMenu(bool playAnimation = true)
+    {
+        instance._inPlayMode = false;
+        instance.StopAllCoroutines();
+        instance._hp = 0;
+        Time.timeScale = 1;
+        foreach (var collider in instance.playerMovement.GetComponentsInChildren<Collider2D>())
+        {
+            collider.enabled = false;
+        }
+        foreach (var renderer in instance.playerMovement.GetComponentsInChildren<Renderer>())
+        {
+            renderer.enabled = true;
+        }
+
+        foreach (var obstacle in GameObject.FindGameObjectsWithTag("Obstacle"))
+        {
+            obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 30);
+        }
+        instance.playerMovement.enabled = false;
+        if (playAnimation)
+        {
+
+            instance.playerMovement.transform.DORotate(new Vector3(0, 0, -600), 1f, RotateMode.LocalAxisAdd).SetEase(Ease.InSine).OnComplete(() => instance.StartCoroutine(instance.RotatePlayerInMenu()));
+            instance.playerMovement.transform.DOMove(new Vector3(0, 0), 0.8f).SetEase(Ease.InSine);
+        }
+        else
+        {
+            instance.StartCoroutine(instance.RotatePlayerInMenu());
+        }
+
+        instance.StartCoroutine(instance.DestroyChunks(false));
+        UI.EnableMenu();
+    }
+    public static void StartGame()
+    {
+        instance.StopAllCoroutines();
+        UI.DisableMenu();
+        instance.StartCoroutine(instance.IncreaseGameSpeed());
+        instance.StartCoroutine(instance.UpdateStats());
+        instance._inPlayMode = true;
+        instance._isResetting = false;
+        instance._hp = Defaults.HP;
+        instance._score = 0;
+        instance._gameSpeed = 1;
+        foreach (var collider in instance.playerMovement.GetComponentsInChildren<Collider2D>())
+        {
+            collider.enabled = true;
+        }
+        instance.playerMovement.transform.DOMove(new Vector3(0, -3), 0.8f);
+        instance.playerMovement.transform.DORotate(new Vector3(0, 0, -(360 + instance.playerMovement.Angle)), 0.75f, RotateMode.LocalAxisAdd).OnComplete(() =>
+        {
+            instance.playerMovement.enabled = true;
+            instance.chunkGenerator.enabled = true;
+
+        });
+
+
+
+    }
+    private IEnumerator RotatePlayerInMenu()
+    {
+        while (true)
+        {
+            yield return null;
+            playerMovement.Rotate(Direction.CLOCKWISE, 200);
+        }
     }
 }

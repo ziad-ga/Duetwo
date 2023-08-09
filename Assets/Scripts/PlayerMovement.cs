@@ -9,10 +9,9 @@ public class PlayerMovement : MonoBehaviour
     public float Angle { get { return transform.rotation.eulerAngles.z; } }
     private void Start()
     {
-        transform.position = new Vector3(transform.position.x, height);
         rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.GameSpeed;
         StartCoroutine(UpdateRotationSpeed());
-    
+
     }
     void Update()
     {
@@ -51,22 +50,24 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-    public void Rotate(Direction dir)
+    public void Rotate(Direction dir, float speed = 0)
     {
         currDirection = dir;
-        transform.Rotate(0, 0, rotationSpeed * (int)dir * Time.deltaTime);
+        float s = speed == 0 ? rotationSpeed : speed;
+        transform.Rotate(0, 0, s * (int)dir * Time.deltaTime);
 
     }
+    
     /// <summary>
     /// Update rotation speed according to game speed every game speed update interval
     /// </summary>
-    public IEnumerator UpdateRotationSpeed()
+    private IEnumerator UpdateRotationSpeed()
     {
         while (true)
         {
             yield return new WaitForSeconds(GameManager.GameUpdateInterval);
             yield return null; // wait for game manager to update game speed            
-            yield return new WaitUntil(() => !GameManager.IsResetting);
+            yield return new WaitUntil(() => !GameManager.IsResetting && GameManager.InPlayMode);
 
             rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.GameSpeed;
         }
