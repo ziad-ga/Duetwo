@@ -16,7 +16,6 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
-        if (EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.name == "PauseButton") return;
         if (SystemInfo.deviceType == DeviceType.Desktop)
         {
             if (Input.GetKey(KeyCode.LeftArrow))
@@ -34,6 +33,8 @@ public class PlayerMovement : MonoBehaviour
         {
             if (Input.touchCount != 0)
             {
+                if (EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.name == "PauseButton") return;
+
                 Touch[] touches = Input.touches;
                 Touch lastTouch = touches[touches.Length - 1];
 

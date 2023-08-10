@@ -23,6 +23,10 @@ public class UI : MonoBehaviour
     private GameObject mainPanel;
     [SerializeField]
     private GameObject settingsPanel;
+    [SerializeField]
+    private GameObject inputOverlayPanel;
+    [SerializeField]
+    private GameObject[] SettingsItems;
     private float Score { get { return int.Parse(scoreText.text); } set { scoreText.text = ((int)value).ToString(); } }
 
     private float pauseButtonYpos, playButtonXpos, homeButtonXpos;
@@ -116,11 +120,9 @@ public class UI : MonoBehaviour
         startGameButton.interactable = false;
         GameManager.StartGame();
     }
-    public void Settings()
+    public void OpenSettings()
     {
-        settingsButton.interactable = false;
-        startGameButton.interactable = false;
-        mainPanel.GetComponent<Button>().interactable = true;
+        inputOverlayPanel.SetActive(true);
 
         Camera.main.transform.DOBlendableMoveBy(new Vector3(Camera.main.ScreenToWorldPoint(Vector3.zero).x, 0), 0.5f).SetEase(Ease.InOutQuad);
         mainPanel.transform.DOBlendableMoveBy(new Vector3(0.5f * Screen.width, 0), 0.5f).SetEase(Ease.InOutQuad);
@@ -129,9 +131,7 @@ public class UI : MonoBehaviour
     }
     public void CloseSettings()
     {
-        settingsButton.interactable = true;
-        startGameButton.interactable = true;
-        mainPanel.GetComponent<Button>().interactable = false;
+        inputOverlayPanel.SetActive(false);
 
         Camera.main.transform.DOMoveX(0, 0.5f).SetEase(Ease.InOutQuad);
         mainPanel.transform.DOBlendableMoveBy(new Vector3(-0.5f * Screen.width, 0), 0.5f).SetEase(Ease.InOutQuad);
