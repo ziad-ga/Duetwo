@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 public class PlayerMovement : MonoBehaviour
 {
     public float rotationSpeed;
@@ -15,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
+        if (EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.name == "PauseButton") return;
         if (SystemInfo.deviceType == DeviceType.Desktop)
         {
             if (Input.GetKey(KeyCode.LeftArrow))
