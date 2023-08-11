@@ -27,6 +27,9 @@ public class UI : MonoBehaviour
     private GameObject inputOverlayPanel;
     [SerializeField]
     private GameObject[] SettingsItems;
+    [SerializeField]
+    private GameObject currSettingsItem, nextSettingsItem;
+    private int settingsIdx = 1;
     private float Score { get { return int.Parse(scoreText.text); } set { scoreText.text = ((int)value).ToString(); } }
 
     private float pauseButtonYpos, playButtonXpos, homeButtonXpos;
@@ -136,6 +139,31 @@ public class UI : MonoBehaviour
         Camera.main.transform.DOMoveX(0, 0.5f).SetEase(Ease.InOutQuad);
         mainPanel.transform.DOBlendableMoveBy(new Vector3(-0.5f * Screen.width, 0), 0.5f).SetEase(Ease.InOutQuad);
         settingsPanel.transform.DOBlendableMoveBy(new Vector3(-0.5f * Screen.width, 0), 0.5f).SetEase(Ease.InOutQuad);
+    }
+    public void GetNext()
+    {
+        nextSettingsItem.GetComponent<Button>().interactable = false;
+
+        settingsIdx = (settingsIdx + 1) % SettingsItems.Length;
+
+        var tempPos = nextSettingsItem.transform.position.x;
+
+        nextSettingsItem.transform.DOMoveX(currSettingsItem.transform.position.x, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
+        {
+            var tempItem = nextSettingsItem;
+            nextSettingsItem = currSettingsItem;
+            currSettingsItem = tempItem;
+            
+            nextSettingsItem.GetComponent<Text>().DOFade(0, 0).SetUpdate(true);
+            nextSettingsItem.transform.DOMoveX(tempPos, 0).SetUpdate(true);
+            nextSettingsItem.GetComponent<Text>().text = SettingsItems[settingsIdx].name;
+            nextSettingsItem.GetComponent<Text>().DOFade(1, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
+            {
+                nextSettingsItem.GetComponent<Button>().interactable = true;
+            });
+        });
+        currSettingsItem.transform.DOMoveX(currSettingsItem.transform.position.x - currSettingsItem.GetComponent<RectTransform>().rect.width, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+
     }
     #endregion
 }
