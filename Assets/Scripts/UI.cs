@@ -29,7 +29,7 @@ public class UI : MonoBehaviour
     private GameObject[] SettingsItems;
     [SerializeField]
     private GameObject currSettingsItem, nextSettingsItem;
-    private int settingsIdx = 1;
+    private int settingsIdx = 0;
     private float Score { get { return int.Parse(scoreText.text); } set { scoreText.text = ((int)value).ToString(); } }
 
     private float pauseButtonYpos, playButtonXpos, homeButtonXpos;
@@ -144,8 +144,31 @@ public class UI : MonoBehaviour
     {
         nextSettingsItem.GetComponent<Button>().interactable = false;
 
+
+        foreach (var toggle in SettingsItems[settingsIdx].GetComponentsInChildren<Toggle>())
+        {
+            foreach (var image in toggle.gameObject.GetComponentsInChildren<Image>())
+            {
+                image.DOFade(0, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+            }
+            toggle.gameObject.GetComponentInChildren<Text>().DOFade(0, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
+            {
+                toggle.gameObject.SetActive(false);
+            });
+        }
         settingsIdx = (settingsIdx + 1) % SettingsItems.Length;
 
+        foreach (var toggle in SettingsItems[settingsIdx].GetComponentsInChildren<Toggle>(includeInactive: true))
+        {
+            toggle.gameObject.SetActive(true);
+            foreach (var image in toggle.gameObject.GetComponentsInChildren<Image>(includeInactive: true))
+            {
+                image.DOFade(1, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+            }
+            toggle.gameObject.GetComponentInChildren<Text>(includeInactive: true).DOFade(1, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        }
+
+        var nextIdx = (settingsIdx + 1) % SettingsItems.Length;
         var tempPos = nextSettingsItem.transform.position.x;
 
         nextSettingsItem.transform.DOMoveX(currSettingsItem.transform.position.x, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
@@ -153,10 +176,10 @@ public class UI : MonoBehaviour
             var tempItem = nextSettingsItem;
             nextSettingsItem = currSettingsItem;
             currSettingsItem = tempItem;
-            
+
             nextSettingsItem.GetComponent<Text>().DOFade(0, 0).SetUpdate(true);
             nextSettingsItem.transform.DOMoveX(tempPos, 0).SetUpdate(true);
-            nextSettingsItem.GetComponent<Text>().text = SettingsItems[settingsIdx].name;
+            nextSettingsItem.GetComponent<Text>().text = SettingsItems[nextIdx].name;
             nextSettingsItem.GetComponent<Text>().DOFade(1, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
             {
                 nextSettingsItem.GetComponent<Button>().interactable = true;
@@ -164,6 +187,10 @@ public class UI : MonoBehaviour
         });
         currSettingsItem.transform.DOMoveX(currSettingsItem.transform.position.x - currSettingsItem.GetComponent<RectTransform>().rect.width, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true);
 
+    }
+    public void HandleToggle(Toggle toggle)
+    {
+        Options.HandlePlayerSettings(toggle.name, toggle.isOn);
     }
     #endregion
 }

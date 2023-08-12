@@ -9,6 +9,8 @@ TagManager:
   - Red
   - Chunk
   - HealthBar
+  - GameManager
+  - AudioManager
   layers:
   - Default
   - TransparentFX
