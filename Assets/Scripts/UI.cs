@@ -8,11 +8,19 @@ public class UI : MonoBehaviour
     [SerializeField]
     private Text scoreText;
     [SerializeField]
+    private Text highScoreText;
+    [SerializeField]
+    private Text restartScoreText;
+    [SerializeField]
+    private Text restartHighscoreText;
+    [SerializeField]
     private Text title;
     [SerializeField]
     private Button pauseButton;
     [SerializeField]
     private Button playButton;
+    [SerializeField]
+    private Button restartButton;
     [SerializeField]
     private Button homeButton;
     [SerializeField]
@@ -30,7 +38,12 @@ public class UI : MonoBehaviour
     [SerializeField]
     private GameObject currSettingsItem, nextSettingsItem;
     private int settingsIdx = 0;
-    private float Score { get { return int.Parse(scoreText.text); } set { scoreText.text = ((int)value).ToString(); } }
+    private float Score { set { scoreText.text = ((int)value).ToString(); } }
+    private int Highscore { set { highScoreText.text = $"HIGHSCORE\n{value}"; } }
+    private float RestartScore { set { restartScoreText.text = $"SCORE\n{(int)value}"; } }
+    private int RestartHighscore { set { restartHighscoreText.text = $"HIGHSCORE\n{value}"; } }
+
+
 
     private float pauseButtonYpos, playButtonXpos, homeButtonXpos;
     void Awake()
@@ -43,6 +56,7 @@ public class UI : MonoBehaviour
         instance = this;
 
         Score = 0;
+        Highscore = PlayerPrefs.GetInt("Highscore", 0);
 
         pauseButtonYpos = pauseButton.transform.position.y;
         playButtonXpos = playButton.transform.position.x;
@@ -53,13 +67,47 @@ public class UI : MonoBehaviour
         Score = GameManager.Score;
     }
 
+    private void _Play()
+    {
+        GameManager.ResumeGame();
+
+        Button rightButton = restartButton.IsActive() ? restartButton : playButton;
+
+        pauseButton.gameObject.SetActive(true);
+
+        pauseButton.transform.parent.parent.GetComponent<Image>().DOFade(0, 0.3f).SetUpdate(true); // fade out the panel
+
+        pauseButton.transform.DOBlendableMoveBy(new Vector3(0, -0.1f * Screen.height, 0), 0.3f).SetEase(Ease.Linear).SetUpdate(true);
+
+        rightButton.transform.DOBlendableMoveBy(new Vector3(0.4f * Screen.width, 0), 0.3f).SetUpdate(true).OnComplete(() => { rightButton.gameObject.SetActive(false); });
+        homeButton.transform.DOBlendableMoveBy(new Vector3(-0.4f * Screen.width, 0), 0.3f).SetUpdate(true).OnComplete(() => { homeButton.gameObject.SetActive(false); });
+    }
+    private void _Pause()
+    {
+        GameManager.PauseGame();
+
+        Button rightButton = restartButton.IsActive() ? restartButton : playButton;
+
+        rightButton.gameObject.SetActive(true);
+        homeButton.gameObject.SetActive(true);
+
+        pauseButton.transform.parent.parent.GetComponent<Image>().DOFade(0.5f, 0.3f).SetUpdate(true); // fade in the panel
+        pauseButton.transform.DOBlendableMoveBy(new Vector3(0, 0.1f * Screen.height), 0.3f).SetUpdate(true).OnComplete(() => pauseButton.gameObject.SetActive(false));
+
+        rightButton.transform.DOBlendableMoveBy(new Vector3(-0.4f * Screen.width, 0), 0.3f).SetUpdate(true);
+        homeButton.transform.DOBlendableMoveBy(new Vector3(0.4f * Screen.width, 0), 0.3f).SetUpdate(true);
+    }
     public static void EnableMenu()
     {
+        instance.Highscore = PlayerPrefs.GetInt("Highscore", 0);
+
         instance.title.gameObject.SetActive(true);
+        instance.highScoreText.gameObject.SetActive(true);
         instance.startGameButton.gameObject.SetActive(true);
         instance.settingsButton.gameObject.SetActive(true);
 
         instance.title.DOFade(1, 1.5f).SetEase(Ease.InQuad);
+        instance.highScoreText.DOFade(1, 1.5f).SetEase(Ease.InQuad);
 
         instance.startGameButton.GetComponent<Image>().DOFade(1, 1.5f).SetEase(Ease.InQuad);
         instance.startGameButton.interactable = true;
@@ -70,51 +118,70 @@ public class UI : MonoBehaviour
     public static void DisableMenu()
     {
         instance.title.DOFade(0, 0.5f).SetEase(Ease.InQuad).onComplete += () => instance.title.gameObject.SetActive(false);
+        instance.highScoreText.DOFade(0, 0.5f).SetEase(Ease.InQuad).onComplete += () => instance.highScoreText.gameObject.SetActive(false);
         instance.startGameButton.GetComponent<Image>().DOFade(0, 0.5f).SetEase(Ease.InQuad).OnComplete(() => instance.startGameButton.gameObject.SetActive(false));
         instance.settingsButton.GetComponent<Image>().DOFade(0, 0.5f).SetEase(Ease.InQuad).OnComplete(() => instance.settingsButton.gameObject.SetActive(false));
 
         instance.scoreText.gameObject.SetActive(true);
         instance.pauseButton.gameObject.SetActive(true);
 
-        instance.scoreText.DOFade(1, 1);
-        instance.pauseButton.GetComponent<Image>().DOFade(1, 1);
-
+        instance.scoreText.DOFade(1, 0.5f);
+        instance.pauseButton.GetComponent<Image>().DOFade(1, 0.5f);
     }
+    public static void EnableRestartPrompt()
+    {
+        instance.restartButton.gameObject.SetActive(true);
+
+        instance._Pause();
+
+        instance.RestartScore = GameManager.Score;
+        instance.RestartHighscore = PlayerPrefs.GetInt("Highscore", 0);
+        instance.restartScoreText.gameObject.SetActive(true);
+        instance.restartHighscoreText.gameObject.SetActive(true);
+
+        instance.restartScoreText.DOFade(1, 0.5f).SetEase(Ease.InQuad).SetUpdate(true);
+        instance.restartHighscoreText.DOFade(1, 0.5f).SetEase(Ease.InQuad).SetUpdate(true);
+    }
+
+
+
     #region Buttons
     public void Pause()
     {
-        GameManager.PauseGame();
-        playButton.gameObject.SetActive(true);
-        homeButton.gameObject.SetActive(true);
-
-        pauseButton.transform.parent.GetComponent<Image>().DOFade(0.5f, 0.3f).SetUpdate(true);
-        pauseButton.transform.DOBlendableMoveBy(new Vector3(0, 0.1f * Screen.height), 0.3f).SetUpdate(true).OnComplete(() => pauseButton.gameObject.SetActive(false));
-
-        playButton.transform.DOBlendableMoveBy(new Vector3(-0.4f * Screen.width, 0), 0.3f).SetUpdate(true);
-        homeButton.transform.DOBlendableMoveBy(new Vector3(0.4f * Screen.width, 0), 0.3f).SetUpdate(true);
+        _Pause();
     }
     public void Play()
     {
-        GameManager.ResumeGame();
-        pauseButton.gameObject.SetActive(true);
+        _Play();
+    }
+    public void Restart()
+    {
+        _Play();
+        GameManager.RestartGame();
 
-        pauseButton.transform.parent.GetComponent<Image>().DOFade(0, 0.3f).SetUpdate(true); // Fade out the panel
-
-        pauseButton.transform.DOBlendableMoveBy(new Vector3(0, -0.1f * Screen.height, 0), 0.3f).SetEase(Ease.Linear).SetUpdate(true);
-
-        playButton.transform.DOBlendableMoveBy(new Vector3(0.4f * Screen.width, 0), 0.3f).SetUpdate(true).OnComplete(() => { playButton.gameObject.SetActive(false); });
-        homeButton.transform.DOBlendableMoveBy(new Vector3(-0.4f * Screen.width, 0), 0.3f).SetUpdate(true).OnComplete(() => { homeButton.gameObject.SetActive(false); });
+        instance.restartScoreText.DOFade(0, 0.5f).SetEase(Ease.InQuad).SetUpdate(true).onComplete += () => instance.restartScoreText.gameObject.SetActive(false);
+        instance.restartHighscoreText.DOFade(0, 0.5f).SetEase(Ease.InQuad).SetUpdate(true).onComplete += () => instance.restartHighscoreText.gameObject.SetActive(false);
     }
     public void Home()
     {
-        pauseButton.transform.parent.GetComponent<Image>().DOFade(0, 0.3f).SetUpdate(true); // Fade out the panel
+        pauseButton.transform.parent.parent.GetComponent<Image>().DOFade(0, 0.3f).SetUpdate(true); // Fade out the panel
 
         pauseButton.transform.position = new Vector3(pauseButton.transform.position.x, pauseButton.transform.position.y - 0.1f * Screen.height);
         pauseButton.GetComponent<Image>().color = new Color(1, 1, 1, 0);
 
-        playButton.transform.DOBlendableMoveBy(new Vector3(0.4f * Screen.width, 0), 0.3f).SetUpdate(true).OnComplete(() => { playButton.gameObject.SetActive(false); });
+        if (restartButton.IsActive())
+        {
+            restartButton.transform.DOBlendableMoveBy(new Vector3(0.4f * Screen.width, 0), 0.3f).SetUpdate(true).OnComplete(() => { restartButton.gameObject.SetActive(false); });
+
+            restartScoreText.DOFade(0, 0.5f).SetUpdate(true).OnComplete(() => { restartScoreText.gameObject.SetActive(false); });
+            restartHighscoreText.DOFade(0, 0.5f).SetUpdate(true).OnComplete(() => { restartHighscoreText.gameObject.SetActive(false); });
+
+        }
+        else
+            playButton.transform.DOBlendableMoveBy(new Vector3(0.4f * Screen.width, 0), 0.3f).SetUpdate(true).OnComplete(() => { playButton.gameObject.SetActive(false); });
+
         homeButton.transform.DOBlendableMoveBy(new Vector3(-0.4f * Screen.width, 0), 0.3f).SetUpdate(true).OnComplete(() => { homeButton.gameObject.SetActive(false); });
-        scoreText.DOFade(0, 1).SetUpdate(true).OnComplete(() => { scoreText.gameObject.SetActive(false); });
+        scoreText.DOFade(0, 0.5f).SetUpdate(true).OnComplete(() => { scoreText.gameObject.SetActive(false); });
 
         GameManager.TransitionToMenu();
     }

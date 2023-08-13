@@ -115,30 +115,6 @@ public class GameManager : MonoBehaviour
         instance.chunkGenerator.enabled = true;
 
     }
-    /// <summary>
-    /// Reset game to initial state
-    /// </summary>
-    private IEnumerator RestartGame(GameObject[] obstacles)
-    {
-        yield return new WaitForSeconds(1);
-
-        instance._score = 0;
-        instance._gameSpeed = 1;
-        instance._hp = Defaults.HP;
-
-        foreach (var collider in playerMovement.GetComponentsInChildren<Collider2D>())
-        {
-            collider.enabled = false;
-        }
-
-        foreach (var obstacle in obstacles)
-        {
-            obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 30);
-        }
-        instance.StartCoroutine(DestroyChunks());
-        instance.StartCoroutine(ResetPlayer());
-
-    }
 
     /// <summary>
     /// Destroy all chunks and enable chunk generator
@@ -154,8 +130,8 @@ public class GameManager : MonoBehaviour
         }
         LastChildYpos = 0;
 
-        if (generateAgain) instance.chunkGenerator.enabled = true;
-        else instance.chunkGenerator.enabled = false;
+        if (generateAgain) chunkGenerator.enabled = true;
+        else chunkGenerator.enabled = false;
     }
 
     /// <summary>
@@ -204,7 +180,11 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
+    private IEnumerator EnableRestartPrompt()
+    {
+        yield return new WaitForSeconds(1);
+        UI.EnableRestartPrompt();
+    }
     /// <summary>
     /// Put game in a resetting state and decide whether to restart the game or only reset current chunks
     /// </summary>
@@ -229,9 +209,35 @@ public class GameManager : MonoBehaviour
         }
 
         if (instance._hp > 0) instance.StartCoroutine(instance.RestartChunk(obstacles));
-        else instance.StartCoroutine(instance.RestartGame(obstacles));
-    }
+        else
+        {
+            if (instance._score > PlayerPrefs.GetInt("Highscore", 0)) PlayerPrefs.SetInt("Highscore", (int)instance._score);
 
+            instance.StartCoroutine(instance.EnableRestartPrompt());
+        }
+    }
+    /// <summary>
+    /// Reset game to initial state
+    /// </summary>
+    public static void RestartGame()
+    {
+        instance._score = 0;
+        instance._gameSpeed = 1;
+        instance._hp = Defaults.HP;
+
+        foreach (var collider in instance.playerMovement.GetComponentsInChildren<Collider2D>())
+        {
+            collider.enabled = false;
+        }
+        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+
+        foreach (var obstacle in obstacles)
+        {
+            obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 30);
+        }
+        instance.StartCoroutine(instance.DestroyChunks());
+        instance.StartCoroutine(instance.ResetPlayer());
+    }
     public static void PauseGame()
     {
         Time.timeScale = 0;
@@ -242,6 +248,8 @@ public class GameManager : MonoBehaviour
     }
     public static void TransitionToMenu(bool playAnimation = true)
     {
+        if (instance._score > PlayerPrefs.GetInt("Highscore", 0)) PlayerPrefs.SetInt("Highscore", (int)instance._score);
+
         instance._inPlayMode = false;
         instance.StopAllCoroutines();
         instance._hp = 0;
