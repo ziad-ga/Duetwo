@@ -21,7 +21,7 @@ public class AudioManager : MonoBehaviour
         }
         instance = this;
         audioSource = gameObject.GetComponent<AudioSource>();
-        audioSource.mute = PlayerPrefs.GetInt("SoundEffects", 0) == 0;
+        audioSource.mute = PlayerPrefs.GetInt("SoundEffects", 1) == 0;
     }
     
     /// <summary>

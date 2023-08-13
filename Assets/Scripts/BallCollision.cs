@@ -7,8 +7,8 @@ public class BallCollision : MonoBehaviour
         AudioManager.PlayAudio("Collision");
         GetComponent<Renderer>().enabled = false;
         GetComponent<Collider2D>().enabled = false;
-        GetComponent<ParticleSystem>().Play();
-        
+        if (PlayerPrefs.GetInt("VisualEffects", 1) == 1) GetComponent<ParticleSystem>().Play();
+
         GameManager.HandleCollision();
     }
 }

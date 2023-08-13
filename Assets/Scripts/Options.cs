@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class Options : MonoBehaviour
 {
     void Start()
@@ -17,17 +16,20 @@ public class Options : MonoBehaviour
                 break;
             case "SoundEffects":
                 GameObject.FindGameObjectWithTag("AudioManager").GetComponent<AudioSource>().mute = !value;
+                break;
+            case "Background":
+                GameObject.FindObjectOfType<BackgroundAnimation>(includeInactive: true).gameObject.SetActive(value);
 
                 break;
-            case "InvertColors":
-
-                break;
-            case "VisualEffects":
-
+            case "Trails":
+                foreach (var trail in GameObject.FindObjectsOfType<TrailRenderer>(includeInactive: true))
+                {
+                    trail.emitting = value;
+                }
                 break;
             case "InvertControls":
-
                 break;
+
             default: Debug.Log("Invalid player setting name: " + name); break;
         }
     }

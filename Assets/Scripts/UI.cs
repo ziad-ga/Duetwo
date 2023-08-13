@@ -142,6 +142,8 @@ public class UI : MonoBehaviour
     }
     public void GetNext()
     {
+        float transTime = 0.25f;
+
         nextSettingsItem.GetComponent<Button>().interactable = false;
 
 
@@ -149,9 +151,9 @@ public class UI : MonoBehaviour
         {
             foreach (var image in toggle.gameObject.GetComponentsInChildren<Image>())
             {
-                image.DOFade(0, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                image.DOFade(0, transTime).SetEase(Ease.InOutQuad).SetUpdate(true);
             }
-            toggle.gameObject.GetComponentInChildren<Text>().DOFade(0, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
+            toggle.gameObject.GetComponentInChildren<Text>().DOFade(0, transTime).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
             {
                 toggle.gameObject.SetActive(false);
             });
@@ -163,15 +165,15 @@ public class UI : MonoBehaviour
             toggle.gameObject.SetActive(true);
             foreach (var image in toggle.gameObject.GetComponentsInChildren<Image>(includeInactive: true))
             {
-                image.DOFade(1, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+                image.DOFade(1, transTime).SetEase(Ease.InOutQuad).SetUpdate(true);
             }
-            toggle.gameObject.GetComponentInChildren<Text>(includeInactive: true).DOFade(1, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+            toggle.gameObject.GetComponentInChildren<Text>(includeInactive: true).DOFade(1, transTime).SetEase(Ease.InOutQuad).SetUpdate(true);
         }
 
         var nextIdx = (settingsIdx + 1) % SettingsItems.Length;
         var tempPos = nextSettingsItem.transform.position.x;
 
-        nextSettingsItem.transform.DOMoveX(currSettingsItem.transform.position.x, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
+        nextSettingsItem.transform.DOMoveX(currSettingsItem.transform.position.x, transTime).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
         {
             var tempItem = nextSettingsItem;
             nextSettingsItem = currSettingsItem;
@@ -180,12 +182,12 @@ public class UI : MonoBehaviour
             nextSettingsItem.GetComponent<Text>().DOFade(0, 0).SetUpdate(true);
             nextSettingsItem.transform.DOMoveX(tempPos, 0).SetUpdate(true);
             nextSettingsItem.GetComponent<Text>().text = SettingsItems[nextIdx].name;
-            nextSettingsItem.GetComponent<Text>().DOFade(1, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
+            nextSettingsItem.GetComponent<Text>().DOFade(1, transTime).SetEase(Ease.InOutQuad).SetUpdate(true).OnComplete(() =>
             {
                 nextSettingsItem.GetComponent<Button>().interactable = true;
             });
         });
-        currSettingsItem.transform.DOMoveX(currSettingsItem.transform.position.x - currSettingsItem.GetComponent<RectTransform>().rect.width, 0.5f).SetEase(Ease.InOutQuad).SetUpdate(true);
+        currSettingsItem.transform.DOMoveX(currSettingsItem.transform.position.x - currSettingsItem.GetComponent<RectTransform>().rect.width, transTime).SetEase(Ease.InOutQuad).SetUpdate(true);
 
     }
     public void HandleToggle(Toggle toggle)

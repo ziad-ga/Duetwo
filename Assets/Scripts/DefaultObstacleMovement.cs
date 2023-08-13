@@ -10,6 +10,10 @@ public class DefaultObstacleMovement : MonoBehaviour
     private Rigidbody2D rb;
     void Start()
     {
+        if(PlayerPrefs.GetInt("Trails", 1) == 0)
+        {
+            GetComponent<TrailRenderer>().enabled = false;
+        }
         rb = GetComponent<Rigidbody2D>();
         rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.GameSpeed);
 

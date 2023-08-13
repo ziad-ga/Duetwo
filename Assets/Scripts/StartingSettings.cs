@@ -5,9 +5,11 @@ using UnityEngine.UI;
 
 public class StartingSettings : MonoBehaviour
 {
+    [SerializeField]
+    private bool defaultValue; // set from inspector
     void Start()
     {
-        GetComponent<Toggle>().isOn = PlayerPrefs.GetInt(name, 1) == 1;
+        GetComponent<Toggle>().isOn = PlayerPrefs.GetInt(name, defaultValue ? 1 : 0) == 1;
     }
 
 }

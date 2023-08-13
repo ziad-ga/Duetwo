@@ -12,7 +12,13 @@ public class PlayerMovement : MonoBehaviour
     {
         rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.GameSpeed;
         StartCoroutine(UpdateRotationSpeed());
-
+        if (PlayerPrefs.GetInt("Trails", 1) == 0)
+        {
+            foreach (var trail in GetComponentsInChildren<TrailRenderer>(includeInactive: true))
+            {
+                trail.emitting = false;
+            }
+        }
     }
     void Update()
     {
@@ -20,12 +26,13 @@ public class PlayerMovement : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftArrow))
             {
-                Rotate(Direction.COUNTERCLOCKWISE);
-
+                if (PlayerPrefs.GetInt("InvertControls", 0) == 1) Rotate(Direction.CLOCKWISE);
+                else Rotate(Direction.COUNTERCLOCKWISE);
             }
             else if (Input.GetKey(KeyCode.RightArrow))
             {
-                Rotate(Direction.CLOCKWISE);
+                if (PlayerPrefs.GetInt("InvertControls", 0) == 1) Rotate(Direction.COUNTERCLOCKWISE);
+                else Rotate(Direction.CLOCKWISE);
             }
 
         }
@@ -40,11 +47,13 @@ public class PlayerMovement : MonoBehaviour
 
                 if (lastTouch.position.x < Screen.width / 2)
                 {
-                    Rotate(Direction.COUNTERCLOCKWISE);
+                    if (PlayerPrefs.GetInt("InvertControls", 0) == 1) Rotate(Direction.CLOCKWISE);
+                    else Rotate(Direction.COUNTERCLOCKWISE);
                 }
                 if (lastTouch.position.x > Screen.width / 2)
                 {
-                    Rotate(Direction.CLOCKWISE);
+                    if (PlayerPrefs.GetInt("InvertControls", 0) == 1) Rotate(Direction.COUNTERCLOCKWISE);
+                    else Rotate(Direction.CLOCKWISE);
                 }
 
             }
@@ -60,7 +69,7 @@ public class PlayerMovement : MonoBehaviour
         transform.Rotate(0, 0, s * (int)dir * Time.deltaTime);
 
     }
-    
+
     /// <summary>
     /// Update rotation speed according to game speed every game speed update interval
     /// </summary>
