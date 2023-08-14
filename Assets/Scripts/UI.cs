@@ -75,7 +75,7 @@ public class UI : MonoBehaviour
 
         pauseButton.gameObject.SetActive(true);
 
-        pauseButton.transform.parent.parent.GetComponent<Image>().DOFade(0, 0.3f).SetUpdate(true); // fade out the panel
+        pauseButton.transform.parent.GetComponent<Image>().DOFade(0, 0.3f).SetUpdate(true); // fade out the panel
 
         pauseButton.transform.DOBlendableMoveBy(new Vector3(0, -0.1f * Screen.height, 0), 0.3f).SetEase(Ease.Linear).SetUpdate(true);
 
@@ -91,7 +91,7 @@ public class UI : MonoBehaviour
         rightButton.gameObject.SetActive(true);
         homeButton.gameObject.SetActive(true);
 
-        pauseButton.transform.parent.parent.GetComponent<Image>().DOFade(0.5f, 0.3f).SetUpdate(true); // fade in the panel
+        pauseButton.transform.parent.GetComponent<Image>().DOFade(0.5f, 0.3f).SetUpdate(true); // fade in the panel
         pauseButton.transform.DOBlendableMoveBy(new Vector3(0, 0.1f * Screen.height), 0.3f).SetUpdate(true).OnComplete(() => pauseButton.gameObject.SetActive(false));
 
         rightButton.transform.DOBlendableMoveBy(new Vector3(-0.4f * Screen.width, 0), 0.3f).SetUpdate(true);
@@ -164,7 +164,7 @@ public class UI : MonoBehaviour
     }
     public void Home()
     {
-        pauseButton.transform.parent.parent.GetComponent<Image>().DOFade(0, 0.3f).SetUpdate(true); // Fade out the panel
+        pauseButton.transform.parent.GetComponent<Image>().DOFade(0, 0.3f).SetUpdate(true); // Fade out the panel
 
         pauseButton.transform.position = new Vector3(pauseButton.transform.position.x, pauseButton.transform.position.y - 0.1f * Screen.height);
         pauseButton.GetComponent<Image>().color = new Color(1, 1, 1, 0);
@@ -196,7 +196,8 @@ public class UI : MonoBehaviour
 
         Camera.main.transform.DOBlendableMoveBy(new Vector3(Camera.main.ScreenToWorldPoint(Vector3.zero).x, 0), 0.25f).SetEase(Ease.InOutQuad);
         mainPanel.transform.DOBlendableMoveBy(new Vector3(0.5f * Screen.width, 0), 0.25f).SetEase(Ease.InOutQuad);
-        settingsPanel.transform.DOBlendableMoveBy(new Vector3(0.5f * Screen.width, 0), 0.25f).SetEase(Ease.InOutQuad);
+        settingsPanel.GetComponent<RectTransform>().DOMoveX(0, 0.25f).SetEase(Ease.InOutQuad);
+
 
     }
     public void CloseSettings()
@@ -205,7 +206,8 @@ public class UI : MonoBehaviour
 
         Camera.main.transform.DOMoveX(0, 0.25f).SetEase(Ease.InOutQuad);
         mainPanel.transform.DOBlendableMoveBy(new Vector3(-0.5f * Screen.width, 0), 0.25f).SetEase(Ease.InOutQuad);
-        settingsPanel.transform.DOBlendableMoveBy(new Vector3(-0.5f * Screen.width, 0), 0.25f).SetEase(Ease.InOutQuad);
+        settingsPanel.transform.DOMoveX(-Screen.width, 0.25f).SetEase(Ease.InOutQuad);
+
     }
     public void GetNext()
     {
