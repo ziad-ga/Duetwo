@@ -11,9 +11,44 @@ public class HealthBarManager : MonoBehaviour
     private float hpBottomMin, hpBottomMax, hpTopMin, hpTopMax, hpSideMin, hpSideMax;
     private float pointBottomMin, pointBottomMax, pointTopMin, pointTopMax, pointSideMin, pointSideMax;
     private Vector3 cameraWorldZero;
-    private void Awake()
+
+    private void Update()
     {
-        cameraWorldZero = Camera.main.ScreenToWorldPoint(Vector3.zero);
+        FitPoints();
+        // Bottom of the screen
+        if (GameManager.HP < widthPortion * 100)
+        {
+            float x = Map(GameManager.HP / 100, hpBottomMin, hpBottomMax, pointBottomMin, pointBottomMax);
+            points[1] = new Vector3(x, cameraWorldZero.y);
+            lineRenderer.SetPositions(points.ToArray());
+        }
+        // Side of the screen
+        else if (GameManager.HP >= widthPortion * 100 && GameManager.HP < (widthPortion + heightPortion) * 100)
+        {
+            lineRenderer.positionCount = 3;
+
+            points[1] = new Vector3(pointBottomMax, cameraWorldZero.y);
+
+            float y = Map(GameManager.HP / 100, hpSideMin, hpSideMax, pointSideMin, pointSideMax);
+            points.Add(new Vector3(pointBottomMax, y));
+            lineRenderer.SetPositions(points.ToArray());
+        }
+        // Top of the screen
+        else if (GameManager.HP >= (widthPortion + heightPortion) * 100)
+        {
+            lineRenderer.positionCount = 4;
+
+            points[1] = new Vector3(pointBottomMax, cameraWorldZero.y);
+            points.Add(new Vector3(pointBottomMax, pointSideMax));
+
+            float x = Map(GameManager.HP / 100, hpTopMin, hpTopMax, pointTopMin, pointTopMax);
+            points.Add(new Vector3(x, pointSideMax));
+            lineRenderer.SetPositions(points.ToArray());
+        }
+    }
+    private void FitPoints()
+    {
+        cameraWorldZero = Utility.ScreenZeroWorldPoint();
         // used to calculate hp boundaries
         heightPortion = (float)Screen.height / (Screen.height + Screen.width);
         widthPortion = Screen.width * 0.5f / (Screen.height + Screen.width);
@@ -21,13 +56,13 @@ public class HealthBarManager : MonoBehaviour
         hpBottomMin = 0;
         hpBottomMax = widthPortion;
         pointBottomMin = 0;
-        pointBottomMax = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0)).x;
+        pointBottomMax = Utility.ScreenLeftRightBoundries().y;
 
 
         hpSideMin = widthPortion;
         hpSideMax = widthPortion + heightPortion;
         pointSideMin = cameraWorldZero.y;
-        pointSideMax = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height)).y;
+        pointSideMax = Utility.ScreenTopBottomBoundries().x;
 
 
         hpTopMin = widthPortion + heightPortion;
@@ -35,55 +70,12 @@ public class HealthBarManager : MonoBehaviour
         pointTopMin = pointBottomMax;
         pointTopMax = pointBottomMin;
 
-
+        points.Clear();
         points.Add(new Vector3(0, cameraWorldZero.y));
         points.Add(new Vector3(0, cameraWorldZero.y));
 
         lineRenderer.positionCount = 2;
         lineRenderer.SetPositions(points.ToArray());
-
-    }
-    private void Update()
-    {
-        if (GameManager.HP < widthPortion * 100)
-        {
-            if (points.Count > 2)
-            {
-                points.RemoveRange(2, points.Count - 2);
-                lineRenderer.positionCount = 2;
-            }
-            float x = Map(GameManager.HP / 100, hpBottomMin, hpBottomMax, pointBottomMin, pointBottomMax);
-            points[1] = new Vector3(x, cameraWorldZero.y);
-            lineRenderer.SetPositions(points.ToArray());
-        }
-        else if (GameManager.HP >= widthPortion * 100 && GameManager.HP < (widthPortion + heightPortion) * 100)
-        {
-            if (points.Count > 3)
-            {
-                points.RemoveAt(3);
-                lineRenderer.positionCount = 3;
-
-            }
-            if (points.Count == 2)
-            {
-                points.Add(points[1]);
-                lineRenderer.positionCount = 3;
-            }
-            float y = Map(GameManager.HP / 100, hpSideMin, hpSideMax, pointSideMin, pointSideMax);
-            points[2] = new Vector3(pointBottomMax, y);
-            lineRenderer.SetPositions(points.ToArray());
-        }
-        else if (GameManager.HP >= (widthPortion + heightPortion) * 100 && GameManager.HP < 100)
-        {
-            if (points.Count == 3)
-            {
-                points.Add(points[2]);
-                lineRenderer.positionCount = 4;
-            }
-            float x = Map(GameManager.HP / 100, hpTopMin, hpTopMax, pointTopMin, pointTopMax);
-            points[3] = new Vector3(x, pointSideMax);
-            lineRenderer.SetPositions(points.ToArray());
-        }
     }
     private float Map(float value, float fromMin, float fromMax, float toMin, float toMax)
     {
