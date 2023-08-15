@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     private PlayerMovement playerMovement;
-    private ChunkGenerator chunkGenerator;
+    private ObstacleGenerator obstacleGenerator;
 
     [SerializeField]
     private bool _isResetting = false;
@@ -16,9 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private float _gameSpeed = 1; // speed multiplier for all game objects
     [SerializeField]
-    private bool _lastChildAppeared = false;
-    [SerializeField]
-    private float _lastChildYpos = 0;
+    private bool _lastObstacleAppeared = false;
     [SerializeField]
     private float _hp;
     [SerializeField]
@@ -27,8 +25,7 @@ public class GameManager : MonoBehaviour
     public static bool IsResetting { get { return instance._isResetting; } }
     public static bool InPlayMode { get { return instance._inPlayMode; } }
     public static float GameSpeed { get { return instance._gameSpeed; } }
-    public static bool LastChildAppeared { get { return instance._lastChildAppeared; } set { instance._lastChildAppeared = value; } }
-    public static float LastChildYpos { get { return instance._lastChildYpos; } set { instance._lastChildYpos = value; } }
+    public static bool LastObstacleAppeared { get { return instance._lastObstacleAppeared; } set { instance._lastObstacleAppeared = value; } }
     public static float HP { get { return instance._hp; } }
     public static float Score { get { return instance._score; } }
     public static float GameUpdateInterval { get { return Defaults.GAME_UPDATE_INTERVAL; } }
@@ -42,7 +39,7 @@ public class GameManager : MonoBehaviour
         instance = this;
 
         playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
-        chunkGenerator = GetComponent<ChunkGenerator>();
+        obstacleGenerator = GetComponent<ObstacleGenerator>();
         _hp = Defaults.HP;
         _score = 0;
     }
@@ -88,7 +85,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Push all obstacles above the screen and continue playing
     /// </summary>
-    private IEnumerator RestartChunk(GameObject[] obstacles)
+    private IEnumerator ClearScreen(GameObject[] obstacles)
     {
         yield return new WaitForSeconds(1);
 
@@ -97,7 +94,7 @@ public class GameManager : MonoBehaviour
             collider.enabled = false;
         }
         GameObject firstObstacle = obstacles.OrderBy(x => x.transform.position.y).First();
-        float resetSpeed = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, 0)).y - firstObstacle.transform.position.y;
+        float resetSpeed = Utility.GetScreenTopBottomBoundries().x - firstObstacle.transform.position.y;
         foreach (var obstacle in obstacles)
         {
             obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, resetSpeed);
@@ -112,26 +109,25 @@ public class GameManager : MonoBehaviour
             obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.GameSpeed);
         }
 
-        instance.chunkGenerator.enabled = true;
+        instance.obstacleGenerator.enabled = true;
 
     }
 
     /// <summary>
-    /// Destroy all chunks and enable chunk generator
+    /// Destroy all obstacles and enable obstacle generator(optional)
     /// </summary>
-    private IEnumerator DestroyChunks(bool generateAgain = true)
+    private IEnumerator DestroyObstacles(bool generateAgain = true)
     {
         yield return new WaitForSeconds(1);
 
-        GameObject[] Chunks = GameObject.FindGameObjectsWithTag("Chunk");
-        foreach (var chunk in Chunks)
+        GameObject[] Obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+        foreach (var obstacle in Obstacles)
         {
-            Destroy(chunk);
+            Destroy(obstacle);
         }
-        LastChildYpos = 0;
 
-        if (generateAgain) chunkGenerator.enabled = true;
-        else chunkGenerator.enabled = false;
+        if (generateAgain) obstacleGenerator.enabled = true;
+        else obstacleGenerator.enabled = false;
     }
 
     /// <summary>
@@ -199,7 +195,7 @@ public class GameManager : MonoBehaviour
         instance._gameSpeed = Mathf.Clamp(instance._gameSpeed - 0.3f, 1, 3);
 
         instance.playerMovement.enabled = false;
-        instance.chunkGenerator.enabled = false; // stop generating chunks until we clear the screen
+        instance.obstacleGenerator.enabled = false; // stop generating chunks until we clear the screen
 
         GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
 
@@ -208,7 +204,7 @@ public class GameManager : MonoBehaviour
             obstacle.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         }
 
-        if (instance._hp > 0) instance.StartCoroutine(instance.RestartChunk(obstacles));
+        if (instance._hp > 0) instance.StartCoroutine(instance.ClearScreen(obstacles));
         else
         {
             if (instance._score > PlayerPrefs.GetInt("Highscore", 0)) PlayerPrefs.SetInt("Highscore", (int)instance._score);
@@ -235,7 +231,7 @@ public class GameManager : MonoBehaviour
         {
             obstacle.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 30);
         }
-        instance.StartCoroutine(instance.DestroyChunks());
+        instance.StartCoroutine(instance.DestroyObstacles());
         instance.StartCoroutine(instance.ResetPlayer());
     }
     public static void PauseGame()
@@ -279,7 +275,7 @@ public class GameManager : MonoBehaviour
             instance.StartCoroutine(instance.RotatePlayerInMenu());
         }
 
-        instance.StartCoroutine(instance.DestroyChunks(false));
+        instance.StartCoroutine(instance.DestroyObstacles(false));
         UI.EnableMenu();
     }
     public static void StartGame()
@@ -301,7 +297,7 @@ public class GameManager : MonoBehaviour
         instance.playerMovement.transform.DORotate(new Vector3(0, 0, -(360 + instance.playerMovement.Angle)), 0.75f, RotateMode.LocalAxisAdd).OnComplete(() =>
         {
             instance.playerMovement.enabled = true;
-            instance.chunkGenerator.enabled = true;
+            instance.obstacleGenerator.enabled = true;
 
         });
 

@@ -194,7 +194,7 @@ public class UI : MonoBehaviour
     {
         inputOverlayPanel.SetActive(true);
 
-        Camera.main.transform.DOBlendableMoveBy(new Vector3(Camera.main.ScreenToWorldPoint(Vector3.zero).x, 0), 0.25f).SetEase(Ease.InOutQuad);
+        Camera.main.transform.DOBlendableMoveBy(new Vector3(Utility.GetScreenLeftRightBoundries().x, 0), 0.25f).SetEase(Ease.InOutQuad);
         mainPanel.transform.DOBlendableMoveBy(new Vector3(0.5f * Screen.width, 0), 0.25f).SetEase(Ease.InOutQuad);
         settingsPanel.GetComponent<RectTransform>().DOMoveX(0, 0.25f).SetEase(Ease.InOutQuad);
 

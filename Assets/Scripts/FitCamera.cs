@@ -20,7 +20,7 @@ public class FitCamera : MonoBehaviour
 
     private void Fit()
     {
-        var rightBoundry = Utility.ScreenLeftRightBoundries().y;
+        var rightBoundry = Utility.GetScreenLeftRightBoundries().y;
         Camera.main.orthographicSize = Mathf.Max(referenceSize, playableAreaRightBoundry * Screen.height / Screen.width);
     }
 }

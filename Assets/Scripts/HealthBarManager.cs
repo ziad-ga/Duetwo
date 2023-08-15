@@ -48,7 +48,7 @@ public class HealthBarManager : MonoBehaviour
     }
     private void FitPoints()
     {
-        cameraWorldZero = Utility.ScreenZeroWorldPoint();
+        cameraWorldZero = Utility.GetScreenZeroWorldPoint();
         // used to calculate hp boundaries
         heightPortion = (float)Screen.height / (Screen.height + Screen.width);
         widthPortion = Screen.width * 0.5f / (Screen.height + Screen.width);
@@ -56,13 +56,13 @@ public class HealthBarManager : MonoBehaviour
         hpBottomMin = 0;
         hpBottomMax = widthPortion;
         pointBottomMin = 0;
-        pointBottomMax = Utility.ScreenLeftRightBoundries().y;
+        pointBottomMax = Utility.GetScreenLeftRightBoundries().y;
 
 
         hpSideMin = widthPortion;
         hpSideMax = widthPortion + heightPortion;
         pointSideMin = cameraWorldZero.y;
-        pointSideMax = Utility.ScreenTopBottomBoundries().x;
+        pointSideMax = Utility.GetScreenTopBottomBoundries().x;
 
 
         hpTopMin = widthPortion + heightPortion;
