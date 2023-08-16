@@ -13388,8 +13388,7 @@ MonoBehaviour:
   _isResetting: 0
   _inPlayMode: 1
   _gameSpeed: 1
-  _lastChildAppeared: 0
-  _lastChildYpos: 0
+  _lastObstacleAppeared: 0
   _hp: 50
   _score: 0
 --- !u!114 &1622602914
