@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class HeightVariations : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField]
+    [Tooltip("Possible values of starting height")]
+    private float[] heights = new float[2];
+    void Awake()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        transform.localScale = new Vector3(transform.localScale.x, heights[Random.Range(0, heights.Length)], transform.localScale.z);
     }
 }

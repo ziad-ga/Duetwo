@@ -8,6 +8,7 @@ public class DefaultObstacleMovement : MonoBehaviour
     private bool alreadyAppeared = false;
     private Rigidbody2D rb;
     private float speedMultiplier = Defaults.NORMAL_OBSTACLE_SPEED_MULTIPLIER;
+    public ObstacleType type; // set from the inspector
     void Start()
     {
         if (PlayerPrefs.GetInt("Trails", 1) == 0)

@@ -1,19 +1,40 @@
 using UnityEngine;
 using System.Linq;
+using System.Collections.Generic;
 public class ObstacleGenerator : MonoBehaviour
 {
 
     private GameObject[] normalObstacles;
+    [SerializeField]
+    private List<GameObject> normalPool;
     private GameObject[] hardObstacles;
+    [SerializeField]
+    private List<GameObject> hardPool;
     private GameObject lastObstacleObj;
     private GameObject lastObstaclePrefab;
 
     private int baseHardChance = 10;
 
+    [SerializeField]
+    private int hardChance;
+
     void Awake()
     {
+        normalPool = new List<GameObject>();
+        hardPool = new List<GameObject>();
+
         normalObstacles = (GameObject[])Resources.LoadAll("Prefabs/Obstacles/Normal").Cast<GameObject>().ToArray();
         hardObstacles = (GameObject[])Resources.LoadAll("Prefabs/Obstacles/Hard").Cast<GameObject>().ToArray();
+        foreach (var obstacle in normalObstacles)
+        {
+            int weight = Defaults.OBSTACLE_WEIGHTS[obstacle.GetComponent<DefaultObstacleMovement>().type];
+            for (int i = 0; i < weight; i++) normalPool.Add(obstacle);
+        }
+        foreach (var obstacle in hardObstacles)
+        {
+            int weight = Defaults.OBSTACLE_WEIGHTS[obstacle.GetComponent<DefaultObstacleMovement>().type];
+            for (int i = 0; i < weight; i++) hardPool.Add(obstacle);
+        }
     }
 
     private void Start()
@@ -36,9 +57,9 @@ public class ObstacleGenerator : MonoBehaviour
     /// </summary>
     private GameObject GetNextChunk()
     {
-        int hardChance = (int)(baseHardChance * GameManager.GameSpeed);
-        GameObject[] pool = Random.Range(0, 100) < 100 - hardChance ? normalObstacles : hardObstacles;
-        int temp = Random.Range(0, pool.Length);
+        hardChance = (int)(baseHardChance * GameManager.GameSpeed);
+        List<GameObject> pool = Random.Range(0, 100) < 100 - hardChance ? normalPool : hardPool;
+        int temp = Random.Range(0, pool.Count);
 
         GameObject obstaclePrefab = pool[temp];
 
