@@ -8,8 +8,7 @@ public class RotatingObstacle : MonoBehaviour
     private float speedMultiplier = Defaults.ROTATING_OBSTACLE_SPEED_MULTIPLIER;
     private float maxRotationSpeed = 450f;
     private int rotationDirection = 1;
-    [SerializeField]
-    private float rotationSpeed = 150f;
+    private float rotationSpeed = Defaults.ROTATING_OBSTACLE_SPEED;
     private bool IsResetting = false;
     void Start()
     {
@@ -18,7 +17,6 @@ public class RotatingObstacle : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         rb.angularVelocity = rotationDirection * MathF.Min(maxRotationSpeed, rotationSpeed * GameManager.GameSpeed * speedMultiplier);
 
-        // StartCoroutine(UpdateAngularVelocity());
     }
     private void Update()
     {
@@ -35,20 +33,6 @@ public class RotatingObstacle : MonoBehaviour
             });
         }
     }
-    /// <summary>
-    /// Update angular velocity of the obstacle every game speed update interval
-    /// </summary>
-    // private IEnumerator UpdateAngularVelocity()
-    // {
-    //     while (true)
-    //     {
-    //         yield return new WaitUntil(() => Math.Round(GameManager.Clock, 2) == GameManager.GameUpdateInterval);
-    //         yield return null; // wait for game manager to update game speed
-    //         yield return new WaitUntil(() => !GameManager.IsResetting && GameManager.InPlayMode);
-
-    //         rb.angularVelocity = rotationDirection * MathF.Min(maxRotationSpeed, rotationSpeed * GameManager.GameSpeed * speedMultiplier);
-    //     }
-    // }
 
 
 }

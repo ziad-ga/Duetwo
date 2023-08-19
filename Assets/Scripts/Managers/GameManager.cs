@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private bool _inPlayMode = false;
     [SerializeField]
-    private float _gameSpeed = 1; // speed multiplier for all game objects
+    private float _gameSpeed = 1; // internal speed multiplier for all game objects
     [SerializeField]
     private bool _lastObstacleAppeared = false;
     [SerializeField]
@@ -24,12 +24,11 @@ public class GameManager : MonoBehaviour
 
     public static bool IsResetting { get { return instance._isResetting; } }
     public static bool InPlayMode { get { return instance._inPlayMode; } }
-    public static float GameSpeed { get { return instance._gameSpeed; } }
+    public static float GameSpeed { get { return Mathf.Clamp(instance._gameSpeed, Defaults.GAME_MIN_SPEED, Defaults.GAME_MAX_SPEED); } set { instance._gameSpeed = Mathf.Clamp(value, Defaults.GAME_MIN_SPEED, Defaults.GAME_MAX_SPEED); } }
     public static bool LastObstacleAppeared { get { return instance._lastObstacleAppeared; } set { instance._lastObstacleAppeared = value; } }
     public static float HP { get { return instance._hp; } }
     public static float Score { get { return instance._score; } }
     public static float GameUpdateInterval { get { return Defaults.GAME_UPDATE_INTERVAL; } }
-    public static float Clock = 0;
     public static AudioSource Music { get { return instance.GetComponent<AudioSource>(); } }
     private void Awake()
     {
@@ -49,16 +48,13 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         TransitionToMenu(false);
-        // StartCoroutine(IncreaseGameSpeed());
-        // StartCoroutine(UpdateStats());
     }
-
     private IEnumerator AddFullHPSpeedBonus()
     {
         while (true)
         {
             yield return new WaitUntil(() => GameManager.HP >= 100);
-            instance._gameSpeed = Mathf.Clamp(instance._gameSpeed + Defaults.FULL_HP_SPEED_BONUS, Defaults.GAME_MIN_SPEED, Defaults.GAME_MAX_SPEED);
+            GameSpeed += Defaults.FULL_HP_SPEED_BONUS;
             yield return new WaitUntil(() => GameManager.HP < 100);
         }
     }
@@ -72,10 +68,7 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
             yield return new WaitUntil(() => !GameManager.IsResetting && GameManager.InPlayMode);
-            // Clock += Time.deltaTime;
-            // if (Math.Round(Clock, 2) == GameUpdateInterval) Clock = GameUpdateInterval;
-            // Clock = Clock % GameUpdateInterval;
-            _score = _score + Mathf.Exp(Time.deltaTime * _gameSpeed * 40) * 0.1f * Time.timeScale;
+            _score = _score + Mathf.Exp(Time.deltaTime * GameSpeed * 40) * 0.1f * Time.timeScale;
             _hp = Mathf.Clamp(_hp + Time.deltaTime * Defaults.HP_PER_SECOND, 0, 100);
         }
     }
@@ -91,15 +84,16 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(Defaults.GAME_UPDATE_INTERVAL);
             yield return new WaitUntil(() => !GameManager.IsResetting && GameManager.InPlayMode);
 
-            if (!Mathf.Approximately(_gameSpeed, 3f)) _gameSpeed += 0.1f;
-            else _gameSpeed += 0.02f;
+            if (GameSpeed < Defaults.GAME_SOFT_MAX_SPEED) GameSpeed += Defaults.GAME_UPDATE_INTERVAL_VALUE;
+            else GameSpeed += 0.02f;
+
         }
     }
 
     /// <summary>
     /// Push all obstacles above the screen and continue playing
     /// </summary>
-    private IEnumerator ClearScreen(GameObject[] obstacles)
+    private IEnumerator ClearScreen()
     {
         yield return new WaitForSeconds(0.75f);
 
@@ -107,6 +101,7 @@ public class GameManager : MonoBehaviour
         {
             collider.enabled = false;
         }
+        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
         GameObject firstObstacle = obstacles.OrderBy(x => x.transform.position.y).First();
         float resetSpeed = Utility.GetScreenTopBottomBoundries().x - firstObstacle.transform.position.y;
         foreach (var obstacle in obstacles)
@@ -211,7 +206,7 @@ public class GameManager : MonoBehaviour
         instance._isResetting = true;
         instance._hp -= Defaults.HIT_DAMAGE;
 
-        instance._gameSpeed = Mathf.Clamp(instance._gameSpeed - Defaults.GAME_COLLISION_SPEED_PENALITY, Defaults.GAME_MIN_SPEED, Defaults.GAME_MAX_SPEED);
+        GameSpeed -= Defaults.GAME_COLLISION_SPEED_PENALITY;
 
         instance.playerMovement.enabled = false;
         instance.obstacleGenerator.enabled = false; // stop generating chunks until we clear the screen
@@ -223,7 +218,7 @@ public class GameManager : MonoBehaviour
             obstacle.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         }
 
-        if (instance._hp > 0) instance.StartCoroutine(instance.ClearScreen(obstacles));
+        if (instance._hp > 0) instance.StartCoroutine(instance.ClearScreen());
         else
         {
             if (instance._score > PlayerPrefs.GetInt("Highscore", 0)) PlayerPrefs.SetInt("Highscore", (int)instance._score);
@@ -237,7 +232,7 @@ public class GameManager : MonoBehaviour
     public static void RestartGame()
     {
         instance._score = 0;
-        instance._gameSpeed = 1;
+        GameSpeed = Defaults.GAME_MIN_SPEED;
         instance._hp = Defaults.HP;
 
         foreach (var collider in instance.playerMovement.GetComponentsInChildren<Collider2D>())
@@ -310,7 +305,7 @@ public class GameManager : MonoBehaviour
         instance._isResetting = false;
         instance._hp = Defaults.HP;
         instance._score = 0;
-        instance._gameSpeed = 1;
+        GameSpeed = Defaults.GAME_MIN_SPEED;
         foreach (var collider in instance.playerMovement.GetComponentsInChildren<Collider2D>())
         {
             collider.enabled = true;

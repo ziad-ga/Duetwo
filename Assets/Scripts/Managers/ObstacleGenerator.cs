@@ -64,7 +64,6 @@ public class ObstacleGenerator : MonoBehaviour
         int temp = Random.Range(0, pool.Count);
 
         GameObject obstaclePrefab = pool[temp];
-        // GameObject obstaclePrefab = hardObstacles[0];
 
         if (lastObstacleObj == null)
         {
