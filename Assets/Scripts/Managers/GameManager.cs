@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     public static float Score { get { return instance._score; } }
     public static float GameUpdateInterval { get { return Defaults.GAME_UPDATE_INTERVAL; } }
     public static float Clock = 0;
+    public static AudioSource Music { get { return instance.GetComponent<AudioSource>(); } }
     private void Awake()
     {
         if (instance != null)
@@ -52,6 +53,16 @@ public class GameManager : MonoBehaviour
         // StartCoroutine(UpdateStats());
     }
 
+    private IEnumerator AddFullHPSpeedBonus()
+    {
+        while (true)
+        {
+            yield return new WaitUntil(() => GameManager.HP >= 100);
+            instance._gameSpeed = Mathf.Clamp(instance._gameSpeed + Defaults.FULL_HP_SPEED_BONUS, Defaults.GAME_MIN_SPEED, Defaults.GAME_MAX_SPEED);
+            yield return new WaitUntil(() => GameManager.HP < 100);
+        }
+    }
+
     /// <summary>
     /// Update internal score and HP every frame
     /// </summary>
@@ -61,11 +72,11 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
             yield return new WaitUntil(() => !GameManager.IsResetting && GameManager.InPlayMode);
-            Clock += Time.deltaTime;
-            if (Math.Round(Clock, 2) == GameUpdateInterval) Clock = 5;
-            Clock = Clock % GameUpdateInterval;
+            // Clock += Time.deltaTime;
+            // if (Math.Round(Clock, 2) == GameUpdateInterval) Clock = GameUpdateInterval;
+            // Clock = Clock % GameUpdateInterval;
             _score = _score + Mathf.Exp(Time.deltaTime * _gameSpeed * 40) * 0.1f * Time.timeScale;
-            _hp = Mathf.Clamp(_hp + Time.deltaTime * 5, 0, 100);
+            _hp = Mathf.Clamp(_hp + Time.deltaTime * Defaults.HP_PER_SECOND, 0, 100);
         }
     }
 
@@ -81,7 +92,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitUntil(() => !GameManager.IsResetting && GameManager.InPlayMode);
 
             if (!Mathf.Approximately(_gameSpeed, 3f)) _gameSpeed += 0.1f;
-            else break;
+            else _gameSpeed += 0.02f;
         }
     }
 
@@ -90,7 +101,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private IEnumerator ClearScreen(GameObject[] obstacles)
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.75f);
 
         foreach (var collider in playerMovement.GetComponentsInChildren<Collider2D>())
         {
@@ -192,10 +203,15 @@ public class GameManager : MonoBehaviour
         // other ball already fired this function
         if (instance.playerMovement.enabled == false) return;
 
+        Music.DOPitch(0, 1.5f).OnComplete(() =>
+        {
+            Music.DOPitch(0.85f, 1f);
+        });
+
         instance._isResetting = true;
         instance._hp -= Defaults.HIT_DAMAGE;
 
-        instance._gameSpeed = Mathf.Clamp(instance._gameSpeed - 0.3f, 1, 3);
+        instance._gameSpeed = Mathf.Clamp(instance._gameSpeed - Defaults.GAME_COLLISION_SPEED_PENALITY, Defaults.GAME_MIN_SPEED, Defaults.GAME_MAX_SPEED);
 
         instance.playerMovement.enabled = false;
         instance.obstacleGenerator.enabled = false; // stop generating chunks until we clear the screen
@@ -283,10 +299,13 @@ public class GameManager : MonoBehaviour
     }
     public static void StartGame()
     {
+
+
         instance.StopAllCoroutines();
         UI.DisableMenu();
         instance.StartCoroutine(instance.IncreaseGameSpeed());
         instance.StartCoroutine(instance.UpdateStats());
+        instance.StartCoroutine(instance.AddFullHPSpeedBonus());
         instance._inPlayMode = true;
         instance._isResetting = false;
         instance._hp = Defaults.HP;
@@ -302,6 +321,12 @@ public class GameManager : MonoBehaviour
             instance.playerMovement.enabled = true;
             instance.obstacleGenerator.enabled = true;
 
+            if (PlayerPrefs.GetInt("FirstTime", 1) == 1)
+            {
+                PlayerPrefs.SetInt("FirstTime", 0);
+                UI.OpenHelpPrompt();
+            }
+
         });
 
 
@@ -312,7 +337,7 @@ public class GameManager : MonoBehaviour
         while (true)
         {
             yield return null;
-            playerMovement.Rotate(Direction.CLOCKWISE, 200);
+            playerMovement.Rotate(Direction.CLOCKWISE, 250);
         }
     }
 }

@@ -14,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.GameSpeed * speedMultiplier;
         StartCoroutine(UpdateRotationSpeed());
-        if (PlayerPrefs.GetInt("Trails", 1) == 0)
+        if (PlayerPrefs.GetInt("VFX", 1) == 0)
         {
             foreach (var trail in GetComponentsInChildren<TrailRenderer>(includeInactive: true))
             {
@@ -42,7 +42,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (Input.touchCount != 0)
             {
-                if (EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.name == "PauseButton") return;
+                if (EventSystem.current.currentSelectedGameObject != null) return;
 
                 Touch[] touches = Input.touches;
                 Touch lastTouch = touches[touches.Length - 1];
@@ -79,9 +79,8 @@ public class PlayerMovement : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(GameManager.GameUpdateInterval);
-            yield return null; // wait for game manager to update game speed            
             yield return new WaitUntil(() => !GameManager.IsResetting && GameManager.InPlayMode);
+            yield return null; // wait for game manager to update game speed            
 
             rotationSpeed = Defaults.BALL_ROTATION_SPEED * GameManager.GameSpeed * speedMultiplier;
         }

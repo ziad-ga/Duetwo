@@ -11,18 +11,19 @@ public class DefaultObstacleMovement : MonoBehaviour
     public ObstacleType type; // set from the inspector
     void Start()
     {
-        if (PlayerPrefs.GetInt("Trails", 1) == 0)
+        if (PlayerPrefs.GetInt("VFX", 1) == 0)
         {
             GetComponent<TrailRenderer>().enabled = false;
         }
         rb = GetComponent<Rigidbody2D>();
-        rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.GameSpeed * speedMultiplier);
 
-        StartCoroutine(UpdateSpeed());
+        // StartCoroutine(UpdateSpeed());
     }
 
     private void Update()
     {
+        if (!GameManager.IsResetting && GameManager.InPlayMode)
+            rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.GameSpeed * speedMultiplier);
         // destroy obstacle if it is not visible anymore
         if (!GetComponent<Renderer>().isVisible && isOnScreen)
         {
@@ -42,15 +43,15 @@ public class DefaultObstacleMovement : MonoBehaviour
 
         }
     }
-    private IEnumerator UpdateSpeed()
-    {
-        while (true)
-        {
-            yield return new WaitUntil(() => Math.Round(GameManager.Clock, 2) == GameManager.GameUpdateInterval);
-            yield return null; // wait for game manager to update game speed
-            yield return new WaitUntil(() => !GameManager.IsResetting && GameManager.InPlayMode);
+    // private IEnumerator UpdateSpeed()
+    // {
+    //     while (true)
+    //     {
+    //         yield return new WaitUntil(() => Math.Round(GameManager.Clock, 2) == GameManager.GameUpdateInterval);
+    //         yield return null; // wait for game manager to update game speed
+    //         yield return new WaitUntil(() => !GameManager.IsResetting && GameManager.InPlayMode);
 
-            rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.GameSpeed * speedMultiplier);
-        }
-    }
+    //         rb.velocity = new Vector2(0, -Defaults.NORMAL_OBSTACLE_SPEED * GameManager.GameSpeed * speedMultiplier);
+    //     }
+    // }
 }

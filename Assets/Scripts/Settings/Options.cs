@@ -19,9 +19,8 @@ public class Options : MonoBehaviour
                 break;
             case "Background":
                 GameObject.FindObjectOfType<BackgroundAnimation>(includeInactive: true).gameObject.SetActive(value);
-
                 break;
-            case "Trails":
+            case "VFX":
                 foreach (var trail in GameObject.FindObjectsOfType<TrailRenderer>(includeInactive: true))
                 {
                     trail.emitting = value;

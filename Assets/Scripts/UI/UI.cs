@@ -1,6 +1,8 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
+using UnityEngine.Rendering.Universal;
 using DG.Tweening;
 public class UI : MonoBehaviour
 {
@@ -18,6 +20,8 @@ public class UI : MonoBehaviour
     [SerializeField]
     private Button pauseButton;
     [SerializeField]
+    private Button helpButton;
+    [SerializeField]
     private Button playButton;
     [SerializeField]
     private Button restartButton;
@@ -28,11 +32,20 @@ public class UI : MonoBehaviour
     [SerializeField]
     private Button settingsButton;
     [SerializeField]
+    private Button creditsButton;
+    [SerializeField]
+    private Button closeCreditsButton;
+    [SerializeField]
     private GameObject mainPanel;
     [SerializeField]
     private GameObject settingsPanel;
     [SerializeField]
     private GameObject inputOverlayPanel;
+    [SerializeField]
+    private GameObject helpPanel;
+    [SerializeField]
+    private GameObject creditsPanel;
+
     [SerializeField]
     private GameObject[] SettingsItems;
     [SerializeField]
@@ -42,10 +55,19 @@ public class UI : MonoBehaviour
     private int Highscore { set { highScoreText.text = $"HIGHSCORE\n{value}"; } }
     private float RestartScore { set { restartScoreText.text = $"SCORE\n{(int)value}"; } }
     private int RestartHighscore { set { restartHighscoreText.text = $"HIGHSCORE\n{value}"; } }
-
-
-
     private float pauseButtonYpos, playButtonXpos, homeButtonXpos;
+
+    [SerializeField]
+    private ScriptableRendererFeature _fullScreenEffect;
+    [SerializeField]
+    private Material _fullScreenMaterial;
+
+    private int effectIntensity = Shader.PropertyToID("_FullScreenIntensity");
+    private float fullIntensity = 0.1f;
+    private float flashIntensity = 0.5f;
+
+
+    private bool fullScreenEffectIsEnabled = false;
     void Awake()
     {
         if (instance != null)
@@ -55,18 +77,97 @@ public class UI : MonoBehaviour
         }
         instance = this;
 
+        _fullScreenEffect.SetActive(false);
         Score = 0;
         Highscore = PlayerPrefs.GetInt("Highscore", 0);
 
         pauseButtonYpos = pauseButton.transform.position.y;
         playButtonXpos = playButton.transform.position.x;
         homeButtonXpos = homeButton.transform.position.x;
+
+        StartCoroutine(ScoreFullHealthAnimation());
     }
     void Update()
     {
         Score = GameManager.Score;
+
+        if (GameManager.HP >= 100 && !fullScreenEffectIsEnabled)
+        {
+            fullScreenEffectIsEnabled = true;
+            GameManager.Music.DOPitch(1.3f, 0.15f).SetUpdate(true).OnComplete(() =>
+             {
+                 GameManager.Music.DOPitch(0.95f, 0.2f).SetUpdate(true);
+             });
+            if (PlayerPrefs.GetInt("VFX", 1) == 1) EnableFullScreenEffect();
+        }
+        else if (GameManager.HP < 100 && fullScreenEffectIsEnabled)
+        {
+            fullScreenEffectIsEnabled = false;
+            GameManager.Music.DOPitch(0.85f, 1).SetUpdate(true);
+
+            if (PlayerPrefs.GetInt("VFX", 1) == 1) StartCoroutine(DisableFullScreenEffect());
+        }
+    }
+    private IEnumerator ScoreFullHealthAnimation()
+    {
+        var orgScale = scoreText.transform.localScale;
+        var scale = 1.1f;
+        while (true)
+        {
+            yield return new WaitUntil(() => GameManager.HP >= 100);
+            var seq = DOTween.Sequence();
+            var test = scoreText.transform.DOScale(new Vector3(scale, scale, scale), 0.5f).SetLoops(-1, LoopType.Yoyo).SetUpdate(true);
+            scoreText.DOBlendableColor(new Color(0.7667851f, 0.6179246f, 1), 0.5f).SetUpdate(true);
+            yield return new WaitUntil(() => GameManager.HP < 100);
+            scoreText.DOBlendableColor(new Color(1, 1, 1), 0.5f).SetUpdate(true);
+            test.Kill();
+            transform.DOScale(orgScale, 0.5f).SetUpdate(true);
+        }
     }
 
+    private void EnableFullScreenEffect()
+    {
+
+        _fullScreenMaterial.SetFloat(effectIntensity, 0);
+        _fullScreenEffect.SetActive(true);
+        StartCoroutine(FlashFSE());
+    }
+    private IEnumerator FlashFSE()
+    {
+        var duration = 0.125f;
+        var t = 0f;
+        while (t < duration)
+        {
+            t += Time.unscaledDeltaTime;
+            _fullScreenMaterial.SetFloat(effectIntensity, Mathf.Lerp(0, flashIntensity, t / duration));
+            yield return null;
+        }
+        StartCoroutine(FSE());
+    }
+    private IEnumerator FSE()
+    {
+        var duration = 0.225f;
+        var t = 0f;
+        while (t < duration)
+        {
+            t += Time.unscaledDeltaTime;
+            _fullScreenMaterial.SetFloat(effectIntensity, Mathf.Lerp(flashIntensity, fullIntensity, t / duration));
+            yield return null;
+        }
+    }
+
+    private IEnumerator DisableFullScreenEffect()
+    {
+        var duration = 1f;
+        var t = 0f;
+        while (t < 1)
+        {
+            t += Time.deltaTime;
+            _fullScreenMaterial.SetFloat(effectIntensity, Mathf.Lerp(fullIntensity, 0, t / duration));
+            yield return null;
+        }
+        _fullScreenEffect.SetActive(false);
+    }
     private void _Play()
     {
         GameManager.ResumeGame();
@@ -74,10 +175,12 @@ public class UI : MonoBehaviour
         Button rightButton = restartButton.IsActive() ? restartButton : playButton;
 
         pauseButton.gameObject.SetActive(true);
+        helpButton.interactable = true;
 
         pauseButton.transform.parent.GetComponent<Image>().DOFade(0, 0.3f).SetUpdate(true); // fade out the panel
 
         pauseButton.transform.DOBlendableMoveBy(new Vector3(0, -0.1f * Screen.height, 0), 0.3f).SetEase(Ease.Linear).SetUpdate(true);
+
 
         rightButton.transform.DOBlendableMoveBy(new Vector3(0.4f * Screen.width, 0), 0.3f).SetUpdate(true).OnComplete(() => { rightButton.gameObject.SetActive(false); });
         homeButton.transform.DOBlendableMoveBy(new Vector3(-0.4f * Screen.width, 0), 0.3f).SetUpdate(true).OnComplete(() => { homeButton.gameObject.SetActive(false); });
@@ -90,6 +193,7 @@ public class UI : MonoBehaviour
 
         rightButton.gameObject.SetActive(true);
         homeButton.gameObject.SetActive(true);
+        helpButton.interactable = false;
 
         pauseButton.transform.parent.GetComponent<Image>().DOFade(0.5f, 0.3f).SetUpdate(true); // fade in the panel
         pauseButton.transform.DOBlendableMoveBy(new Vector3(0, 0.1f * Screen.height), 0.3f).SetUpdate(true).OnComplete(() => pauseButton.gameObject.SetActive(false));
@@ -105,6 +209,7 @@ public class UI : MonoBehaviour
         instance.highScoreText.gameObject.SetActive(true);
         instance.startGameButton.gameObject.SetActive(true);
         instance.settingsButton.gameObject.SetActive(true);
+        instance.creditsButton.gameObject.SetActive(true);
 
         instance.title.DOFade(1, 1.5f).SetEase(Ease.InQuad);
         instance.highScoreText.DOFade(1, 1.5f).SetEase(Ease.InQuad);
@@ -114,6 +219,9 @@ public class UI : MonoBehaviour
 
         instance.settingsButton.GetComponent<Image>().DOFade(1, 1.5f).SetEase(Ease.InQuad);
         instance.settingsButton.interactable = true;
+
+        instance.creditsButton.GetComponent<Image>().DOFade(1, 1.5f).SetEase(Ease.InQuad);
+        instance.creditsButton.interactable = true;
     }
     public static void DisableMenu()
     {
@@ -121,12 +229,16 @@ public class UI : MonoBehaviour
         instance.highScoreText.DOFade(0, 0.5f).SetEase(Ease.InQuad).onComplete += () => instance.highScoreText.gameObject.SetActive(false);
         instance.startGameButton.GetComponent<Image>().DOFade(0, 0.5f).SetEase(Ease.InQuad).OnComplete(() => instance.startGameButton.gameObject.SetActive(false));
         instance.settingsButton.GetComponent<Image>().DOFade(0, 0.5f).SetEase(Ease.InQuad).OnComplete(() => instance.settingsButton.gameObject.SetActive(false));
+        instance.creditsButton.GetComponent<Image>().DOFade(0, 0.5f).SetEase(Ease.InQuad).OnComplete(() => instance.creditsButton.gameObject.SetActive(false));
 
         instance.scoreText.gameObject.SetActive(true);
         instance.pauseButton.gameObject.SetActive(true);
+        instance.helpButton.gameObject.SetActive(true);
+        instance.helpButton.interactable = true;
 
         instance.scoreText.DOFade(1, 0.5f);
         instance.pauseButton.GetComponent<Image>().DOFade(1, 0.5f);
+        instance.helpButton.GetComponent<Image>().DOFade(1, 0.5f);
     }
     public static void EnableRestartPrompt()
     {
@@ -142,7 +254,10 @@ public class UI : MonoBehaviour
         instance.restartScoreText.DOFade(1, 0.5f).SetEase(Ease.InQuad).SetUpdate(true);
         instance.restartHighscoreText.DOFade(1, 0.5f).SetEase(Ease.InQuad).SetUpdate(true);
     }
-
+    public static void OpenHelpPrompt()
+    {
+        instance.OpenHelp();
+    }
 
 
     #region Buttons
@@ -168,6 +283,7 @@ public class UI : MonoBehaviour
 
         pauseButton.transform.position = new Vector3(pauseButton.transform.position.x, pauseButton.transform.position.y - 0.1f * Screen.height);
         pauseButton.GetComponent<Image>().color = new Color(1, 1, 1, 0);
+        helpButton.GetComponent<Image>().DOFade(0, 0.3f).SetUpdate(true);
 
         if (restartButton.IsActive())
         {
@@ -185,10 +301,42 @@ public class UI : MonoBehaviour
 
         GameManager.TransitionToMenu();
     }
+    public void OpenHelp()
+    {
+        GameManager.PauseGame();
+        helpPanel.SetActive(true);
+        helpPanel.GetComponent<Button>().interactable = true;
+        helpButton.interactable = false;
+        helpPanel.transform.DOScale(1, 0.5f).SetEase(Ease.OutBack).SetUpdate(true);
+    }
+    public void CloseHelp()
+    {
+        helpPanel.GetComponent<Button>().interactable = false;
+        helpPanel.transform.DOScale(0, 0.5f).SetEase(Ease.InBack).SetUpdate(true).OnComplete(() =>
+        {
+            GameManager.ResumeGame();
+            helpPanel.SetActive(false);
+            helpButton.interactable = true;
+        });
+    }
     public void StartGame()
     {
         startGameButton.interactable = false;
         GameManager.StartGame();
+    }
+    public void OpenCredits()
+    {
+        creditsButton.interactable = false;
+        creditsPanel.SetActive(true);
+        creditsPanel.transform.DOScale(1, 0.5f).SetEase(Ease.OutBack).SetUpdate(true);
+    }
+    public void CloseCredits()
+    {
+        creditsPanel.transform.DOScale(0, 0.3f).SetEase(Ease.InBack).SetUpdate(true).OnComplete(() =>
+        {
+            creditsPanel.SetActive(false);
+            creditsButton.interactable = true;
+        });
     }
     public void OpenSettings()
     {

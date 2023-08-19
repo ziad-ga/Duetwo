@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class BallCollision : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class BallCollision : MonoBehaviour
         GetComponent<Renderer>().enabled = false;
         GetComponent<Collider2D>().enabled = false;
         if (PlayerPrefs.GetInt("VisualEffects", 1) == 1) GetComponent<ParticleSystem>().Play();
-
+        
         GameManager.HandleCollision();
     }
 }

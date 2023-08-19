@@ -13,7 +13,9 @@ public class ObstacleGenerator : MonoBehaviour
     private GameObject lastObstacleObj;
     private GameObject lastObstaclePrefab;
 
-    private int baseHardChance = 10;
+    private int baseHardChance = 5;
+    private float hardChanceExp = 2f;
+
 
     [SerializeField]
     private int hardChance;
@@ -57,11 +59,12 @@ public class ObstacleGenerator : MonoBehaviour
     /// </summary>
     private GameObject GetNextChunk()
     {
-        hardChance = (int)(baseHardChance * GameManager.GameSpeed);
+        hardChance = (int)(baseHardChance * Mathf.Pow(GameManager.GameSpeed, hardChanceExp));
         List<GameObject> pool = Random.Range(0, 100) < 100 - hardChance ? normalPool : hardPool;
         int temp = Random.Range(0, pool.Count);
 
         GameObject obstaclePrefab = pool[temp];
+        // GameObject obstaclePrefab = hardObstacles[0];
 
         if (lastObstacleObj == null)
         {
@@ -72,7 +75,7 @@ public class ObstacleGenerator : MonoBehaviour
         else
         {
             var padding = Mathf.Max(obstaclePrefab.transform.position.y, lastObstaclePrefab.transform.position.y);
-            Vector3 pos = new Vector3(obstaclePrefab.transform.position.x, lastObstacleObj.transform.position.y + padding);
+            Vector3 pos = new Vector3(obstaclePrefab.transform.position.x, lastObstacleObj.transform.position.y + padding + obstaclePrefab.transform.localScale.y * 0.5f + lastObstaclePrefab.transform.localScale.y * 0.5f);
             lastObstaclePrefab = obstaclePrefab;
             return Instantiate(obstaclePrefab, pos, Quaternion.identity);
         }
